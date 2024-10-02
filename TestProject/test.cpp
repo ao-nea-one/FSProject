@@ -49,9 +49,7 @@ namespace No01_2_List {
 		TEST(GetDataNum, ID05_RemoveSuccess) {
 			List<int> list;
 			// ƒm[ƒh‚Ìíœ
-			list.PushBack(0);
-			List<int>::Iterator iter = list.begin();
-
+			list.PopBack();
 
 			EXPECT_EQ(list.GetCount(), 0);
 		}
@@ -61,16 +59,18 @@ namespace No01_2_List {
 			// ƒm[ƒh‚Ìíœ¸”s
 			list.PushBack(0);
 			List<int>::Iterator iter;
+			list.Remove(iter);
 
-			EXPECT_EQ(list.Remove(iter), 1);
+			EXPECT_EQ(list.GetCount(), 1);
 		}
 
 		TEST(GetDataNum, ID07_RemoveEmptyFailed) {
 			List<int> list;
 			// ƒm[ƒh‚ª‹ó‚Åíœ
 			List<int>::Iterator iter;
+			list.Remove(iter);
 
-			EXPECT_EQ(list.Remove(iter), 1);
+			EXPECT_EQ(list.GetCount(), 0);
 		}
 	}
 
@@ -92,7 +92,7 @@ namespace No01_2_List {
 			list.Insert(list.begin(), 2);
 		}
 
-		TEST(InsertData, ID10_InsertEnd) {
+		TEST(InsertData, ID11_InsertEnd) {
 			List<int> list;
 
 			list.PushBack(0);
@@ -100,12 +100,13 @@ namespace No01_2_List {
 			list.Insert(list.end(), 2);
 		}
 
-		TEST(InsertData, ID10_InsertEnd) {
+		TEST(InsertData, ID12_Insert) {
 			List<int> list;
 
 			list.PushBack(0);
 			list.PushBack(1);
-			list.Insert(list.end(), 2);
+			List<int>::Iterator iter = list.begin();
+			list.Insert(++iter, 2);
 		}
 	}
 }

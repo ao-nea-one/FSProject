@@ -7,10 +7,6 @@
 #ifndef _LIST_H_
 #define _LIST_H_
 
-/*--- include ---*/
-
-#include "Result.h"
-
 
 
 /// <summary>
@@ -176,6 +172,8 @@ public:
 	public:
 		/*--- オペレータ ---*/
 
+		Iterator operator++() { return Iterator(pNode = pNode->pNext); }
+		Iterator operator--() { return Iterator(pNode = pNode->pPrev); }
 		T *operator&() { return &ConstIterator::GetNode()->Get(); }
 		T &operator*() { return ConstIterator::GetNode()->Get(); }
 	};
@@ -233,7 +231,7 @@ public:
 	/// 末尾に追加する
 	/// </summary>
 	/// <param name="value"></param>
-	int PushBack(const T &value) {
+	void PushBack(const T &value) {
 		Node *pNode = new Node(value);
 
 		// 追加処理
@@ -306,7 +304,7 @@ public:
 	/// <summary>
 	/// 挿入する
 	/// </summary>
-	int Insert(Iterator &iter, const T&value) {
+	bool Insert(Iterator &iter, const T&value) {
 		Node *pNode = new Node(value);
 
 		// 追加処理
@@ -326,11 +324,11 @@ public:
 			count++;
 		}
 		else {
-			return 0;
+			return false;
 		}
 
 
-		return 1;
+		return true;
 	}
 
 	/// <summary>
@@ -389,7 +387,7 @@ public:
 	}
 
 	Iterator end(void) {
-		return Iterator(pTail->pNext);
+		return Iterator(pTail);
 	}
 
 	ConstIterator front(void) {
