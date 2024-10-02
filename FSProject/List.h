@@ -7,6 +7,10 @@
 #ifndef _LIST_H_
 #define _LIST_H_
 
+/*--- include ---*/
+
+#include "Result.h"
+
 
 
 /// <summary>
@@ -14,8 +18,8 @@
 /// </summary>
 template<class T>
 class List {
-public:
-	/*--- クラス ---*/
+private:
+	/*--- インナークラス ---*/
 
 	/// <summary>
 	/// ノードクラス
@@ -95,10 +99,12 @@ public:
 		T &Get(void) { return value; }
 	};
 
+public:
+
 	/// <summary>
-	/// イテレータクラス
+	/// コンストイテレータクラス
 	/// </summary>
-	class Iterator {
+	class ConstIterator {
 	private:
 		/*--- メンバー変数 ---*/
 
@@ -111,15 +117,16 @@ public:
 	public:
 		/*--- コンストラクタ ---*/
 
-		Iterator() = default;
+		ConstIterator() = default;
+		ConstIterator(const ConstIterator &iter) : pNode(iter.pNode) { }
 
-	private:
+	protected:
 
-		Iterator(Node *pNode) : pNode(pNode) { }
+		ConstIterator(Node *pNode) : pNode(pNode) { }
 
 
 
-	private:
+	protected:
 		/*--- メンバー関数 ---*/
 
 		Node *GetNode(void) { return pNode; }
@@ -129,15 +136,48 @@ public:
 	public:
 		/*--- オペレータ ---*/
 
-		Iterator operator++() { return Iterator(pNode = pNode->pNext); }
-		Iterator operator--() { return Iterator(pNode = pNode->pPrev); }
-		Iterator operator++(int) { return Iterator(pNode = pNode->pNext); }
-		Iterator operator--(int) { return Iterator(pNode = pNode->pPrev); }
-		bool operator==(Iterator &iter) { return pNode == iter.pNode; }
-		bool operator!=(Iterator &iter) { return pNode != iter.pNode; }
-		T &operator*() { return pNode->Get(); }
-		T *operator&() { return &pNode->Get(); }
+		ConstIterator operator++() { return ConstIterator(pNode = pNode->pNext); }
+		ConstIterator operator--() { return ConstIterator(pNode = pNode->pPrev); }
+		bool operator==(ConstIterator &iter) { return pNode == iter.pNode; }
+		bool operator!=(ConstIterator &iter) { return pNode != iter.pNode; }
+		ConstIterator operator=(ConstIterator &iter) { return ConstIterator(pNode = iter.pNode); }
+		T *const  operator&() { return &pNode->Get(); }
+		T &operator* () { return pNode->Get(); }
 		T const *operator->() { return pNode; }
+	};
+
+	/// <summary>
+	/// イテレータクラス
+	/// </summary>
+	class Iterator : public ConstIterator {
+	private:
+
+		friend List;
+
+	public:
+		/*--- コンストラクタ ---*/
+
+		Iterator() = default;
+		Iterator(const Iterator &iter) : ConstIterator(iter.pNode) { }
+
+	protected:
+
+		Iterator(Node *pNode) : ConstIterator(pNode) { }
+
+
+
+	protected:
+		/*--- メンバー関数 ---*/
+
+		Node *GetNode(void) { return pNode; }
+
+
+
+	public:
+		/*--- オペレータ ---*/
+
+		T *operator&() { return &ConstIterator::GetNode()->Get(); }
+		T &operator*() { return ConstIterator::GetNode()->Get(); }
 	};
 
 
@@ -172,7 +212,7 @@ public:
 	/// 先頭に追加する
 	/// </summary>
 	/// <param name="value"></param>
-	void PushFront(T value) {
+	int PushFront(const T &value) {
 		Node *pNode = new Node(value);
 
 		// 追加処理
@@ -186,13 +226,14 @@ public:
 
 
 		count++;
+		return 1;
 	}
 
 	/// <summary>
 	/// 末尾に追加する
 	/// </summary>
 	/// <param name="value"></param>
-	void PushBack(T value) {
+	int PushBack(const T &value) {
 		Node *pNode = new Node(value);
 
 		// 追加処理
@@ -211,7 +252,7 @@ public:
 	/// <summary>
 	/// 先頭を削除する
 	/// </summary>
-	void PopFront(void) {
+	bool PopFront(void) {
 		if (pHead) {
 			Node *pNext = pHead->pNext;
 
@@ -226,13 +267,18 @@ public:
 			if (count == 0) {
 				pHead = pTail = nullptr;
 			}
+
+			return true;
+		}
+		else {
+			return false;
 		}
 	}
 
 	/// <summary>
 	/// 末尾を削除する
 	/// </summary>
-	void PopBack(void) {
+	bool PopBack(void) {
 		if (pTail) {
 			Node *pPrev = pTail->pPrev;
 
@@ -247,9 +293,81 @@ public:
 			if (count == 0) {
 				pHead = pTail = nullptr;
 			}
+
+			return true;
+		}
+		else {
+			return false;
 		}
 	}
 
+
+
+	/// <summary>
+	/// 挿入する
+	/// </summary>
+	int Insert(Iterator &iter, const T&value) {
+		Node *pNode = new Node(value);
+
+		// 追加処理
+		if (pHead == nullptr && pTail == nullptr) {
+			pHead = pTail = pNode;
+
+			count++;
+		}
+		else if (iter.GetNode()) {
+			iter.GetNode()->LinkNext(pNode);
+
+			// 末尾に追加したなら更新
+			if (iter.GetNode() == pTail) {
+				pTail = pNode;
+			}
+
+			count++;
+		}
+		else {
+			return 0;
+		}
+
+
+		return 1;
+	}
+
+	/// <summary>
+	/// 削除する
+	/// </summary>
+	bool Remove(Iterator &iter) {
+		Node *pNode = iter.GetNode();
+
+		// 削除処理
+		if (pNode) {
+
+			// 末尾を削除したなら更新
+			if (pNode == pTail) {
+				pTail = pNode->pPrev;
+			}
+			// 先頭を削除したなら更新
+			if (pNode == pHead) {
+				pHead = pNode->pNext;
+			}
+
+			pNode->Leave();
+			delete pNode;
+
+			count--;
+		}
+		else {
+			return false;
+		}
+
+
+		return true;
+	}
+
+	/// <summary>
+	/// 全て削除
+	/// </summary>
+	/// <param name=""></param>
 	void Clear(void) {
 		Node *pTmpNode;
 
@@ -271,8 +389,23 @@ public:
 	}
 
 	Iterator end(void) {
-		return nullptr;
+		return Iterator(pTail->pNext);
 	}
+
+	ConstIterator front(void) {
+		return ConstIterator(pHead);
+	}
+
+	ConstIterator back(void) {
+		return ConstIterator(pTail);
+	}
+
+
+
+public:
+	/*--- アクセサ関数 ---*/
+
+	unsigned int GetCount(void) { return count; }
 };
 
 

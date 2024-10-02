@@ -1,17 +1,25 @@
 #include "ScoreManager.h"
-
+#include <iostream>
 
 
 int main(void) {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
-	ScoreManager scoreManager;
+	List<int> tmp;
+	tmp.PushBack(0);
+	tmp.PushBack(1);
+	tmp.PushBack(2);
 
-	scoreManager.Load("asset/Scores.txt");
+	std::cout << "Hello World";
+	tmp.Clear();
 
-	scoreManager.Display();
+	//ScoreManager scoreManager;
 
-	scoreManager.Clear();
+	//scoreManager.Load("asset/Scores.txt");
+
+	//scoreManager.Display();
+
+	//scoreManager.Clear();
 
 	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
 	_CrtDumpMemoryLeaks();
