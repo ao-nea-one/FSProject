@@ -61,16 +61,18 @@ namespace No01_2_List {
 			// ƒm[ƒh‚Ìíœ¸”s
 			list.PushBack(0);
 			List<int>::Iterator iter;
+			list.Remove(iter);
 
-			EXPECT_EQ(list.Remove(iter), 1);
+			EXPECT_EQ(list.GetCount(), 1);
 		}
 
 		TEST(GetDataNum, ID07_RemoveEmptyFailed) {
 			List<int> list;
 			// ƒm[ƒh‚ª‹ó‚Åíœ
 			List<int>::Iterator iter;
+			list.Remove(iter);
 
-			EXPECT_EQ(list.Remove(iter), 1);
+			EXPECT_EQ(list.GetCount(), 1);
 		}
 	}
 
@@ -90,14 +92,6 @@ namespace No01_2_List {
 			list.PushBack(0);
 			list.PushBack(1);
 			list.Insert(list.begin(), 2);
-		}
-
-		TEST(InsertData, ID10_InsertEnd) {
-			List<int> list;
-
-			list.PushBack(0);
-			list.PushBack(1);
-			list.Insert(list.end(), 2);
 		}
 
 		TEST(InsertData, ID10_InsertEnd) {

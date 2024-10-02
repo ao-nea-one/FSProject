@@ -9,8 +9,6 @@
 
 /*--- include ---*/
 
-#include "Result.h"
-
 
 
 /// <summary>
@@ -186,7 +184,7 @@ private:
 	/*--- メンバー変数 ---*/
 
 	Node *pHead = nullptr;	// 先頭ノード
-	Node *pTail = nullptr;	// 末尾ノード
+	Node tail;				// 末尾ノード
 	unsigned int count = 0;	// 要素数
 
 
@@ -194,7 +192,9 @@ private:
 public:
 	/*--- コンストラクタ ---*/
 
-	List() = default;
+	List() {
+		pHead = &tail;
+	}
 
 
 
@@ -212,37 +212,31 @@ public:
 	/// 先頭に追加する
 	/// </summary>
 	/// <param name="value"></param>
-	int PushFront(const T &value) {
+	void PushFront(const T &value) {
 		Node *pNode = new Node(value);
 
 		// 追加処理
-		if (pHead) {
 			pHead->LinkPrevious(pNode);
 			pHead = pNode;
-		}
-		else {
-			pHead = pTail = pNode;
-		}
 
 
 		count++;
-		return 1;
 	}
 
 	/// <summary>
 	/// 末尾に追加する
 	/// </summary>
 	/// <param name="value"></param>
-	int PushBack(const T &value) {
+	void PushBack(const T &value) {
 		Node *pNode = new Node(value);
 
 		// 追加処理
-		if (pTail) {
-			pTail->LinkNext(pNode);
-			pTail = pNode;
+		if (pHead != &tail) {
+			tail.LinkPrevious(pNode);
 		}
 		else {
-			pHead = pTail = pNode;
+			tail.LinkPrevious(pNode);
+			pHead = pNode;
 		}
 
 
@@ -252,8 +246,8 @@ public:
 	/// <summary>
 	/// 先頭を削除する
 	/// </summary>
-	bool PopFront(void) {
-		if (pHead) {
+	void PopFront(void) {
+		if (pHead != &tail) {
 			Node *pNext = pHead->pNext;
 
 			// 削除処理
@@ -263,41 +257,23 @@ public:
 
 
 			count--;
-
-			if (count == 0) {
-				pHead = pTail = nullptr;
-			}
-
-			return true;
-		}
-		else {
-			return false;
 		}
 	}
 
 	/// <summary>
 	/// 末尾を削除する
 	/// </summary>
-	bool PopBack(void) {
-		if (pTail) {
-			Node *pPrev = pTail->pPrev;
+	void PopBack(void) {
+		if (pHead != &tail) {
+			Node *pPrev = tail.pPrev->pPrev;
 
 			// 削除処理
-			pTail->Leave();
-			delete pTail;
-			pTail = pPrev;
+			tail.pPrev->Leave();
+			delete tail.pPrev;
+			tail.pPrev = pPrev;
 
 
 			count--;
-
-			if (count == 0) {
-				pHead = pTail = nullptr;
-			}
-
-			return true;
-		}
-		else {
-			return false;
 		}
 	}
 
@@ -306,46 +282,25 @@ public:
 	/// <summary>
 	/// 挿入する
 	/// </summary>
-	int Insert(Iterator &iter, const T&value) {
+	void Insert(Iterator &iter, const T&value) {
 		Node *pNode = new Node(value);
 
 		// 追加処理
-		if (pHead == nullptr && pTail == nullptr) {
-			pHead = pTail = pNode;
-
-			count++;
-		}
-		else if (iter.GetNode()) {
+		if (iter.GetNode()) {
 			iter.GetNode()->LinkNext(pNode);
 
-			// 末尾に追加したなら更新
-			if (iter.GetNode() == pTail) {
-				pTail = pNode;
-			}
-
 			count++;
 		}
-		else {
-			return 0;
-		}
-
-
-		return 1;
 	}
 
 	/// <summary>
 	/// 削除する
 	/// </summary>
-	bool Remove(Iterator &iter) {
+	void Remove(Iterator &iter) {
 		Node *pNode = iter.GetNode();
 
 		// 削除処理
 		if (pNode) {
-
-			// 末尾を削除したなら更新
-			if (pNode == pTail) {
-				pTail = pNode->pPrev;
-			}
 			// 先頭を削除したなら更新
 			if (pNode == pHead) {
 				pHead = pNode->pNext;
@@ -356,12 +311,6 @@ public:
 
 			count--;
 		}
-		else {
-			return false;
-		}
-
-
-		return true;
 	}
 
 	/// <summary>
@@ -389,7 +338,7 @@ public:
 	}
 
 	Iterator end(void) {
-		return Iterator(pTail->pNext);
+		return Iterator(tail);
 	}
 
 	ConstIterator front(void) {
