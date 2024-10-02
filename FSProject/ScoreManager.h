@@ -23,6 +23,12 @@
 struct ScoreInfo {
 	int score = 0;			// スコア
 	std::string playerName;	// プレイヤー名
+
+
+
+	/*--- メンバー関数 ---*/
+
+	ScoreInfo() = default;
 };
 
 
@@ -44,19 +50,17 @@ public:
 	/// <summary>
 	/// txtファイルの読み込み
 	/// </summary>
-	/// <param name="filePath"></param>
+	/// <param name="filePath">ファイルパス</param>
 	void Load(std::string filePath);
 
 	/// <summary>
 	/// 表示
 	/// </summary>
-	/// <param name=""></param>
 	void Display(void);
 
 	/// <summary>
 	/// スコア情報の削除
 	/// </summary>
-	/// <param name=""></param>
 	void Clear(void);
 };
 
