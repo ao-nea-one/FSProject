@@ -15,11 +15,11 @@
 
 
 #define print {\
-Iterator e = this->end();\
-for (Iterator j = this->begin(); j != e; j++) {\
-	if (j == tmpStart || j == tmpEnd) std::cout << "[";\
+Iterator e = end();\
+for (Iterator j = begin(); j != e; ++j) {\
+	if (j == l || j == r) std::cout << "[";\
 	std::cout << *j;\
-	if (j == tmpStart || j == tmpEnd) std::cout << "]";\
+	if (j == l || j == r) std::cout << "]";\
 }\
 std::cout << std::endl;\
 }\
@@ -49,7 +49,7 @@ private:
 		/*--- コンストラクタ ---*/
 
 		Node() = default;
-		Node(T* pValue) : pValue(pValue) { }
+		Node(T *pValue) : pValue(pValue) { }
 	};
 
 
@@ -97,17 +97,28 @@ public:
 	public:
 		/*--- オペレータ ---*/
 
-		bool operator==(ConstIterator &iter) {
-			return pNode == iter.pNode;
-		}
-
-		bool operator!=(ConstIterator &iter) {
-			return pNode != iter.pNode;
-		}
-
-		T *const *operator&() {
+		ConstIterator operator++() {
 			assert(pNode);
-			return pNode->pValue;
+			assert(pNode->pNext);
+			return ConstIterator(pNode = pNode->pNext);
+		}
+
+		ConstIterator operator--() {
+			assert(pNode);
+			assert(pNode->pPrev);
+			return ConstIterator(pNode = pNode->pPrev);
+		}
+
+		ConstIterator operator++(int) {
+			assert(pNode);
+			assert(pNode->pNext);
+			return ConstIterator(pNode = pNode->pNext);
+		}
+
+		ConstIterator operator--(int) {
+			assert(pNode);
+			assert(pNode->pPrev);
+			return ConstIterator(pNode = pNode->pPrev);
 		}
 
 		T const &operator* () {
@@ -115,9 +126,17 @@ public:
 			return *pNode->pValue;
 		}
 
-		T const *operator->() {
-			assert(pNode);
-			return pNode;
+		ConstIterator operator=(ConstIterator iter) {
+			pNode = iter.pNode;
+			return *this;
+		}
+
+		bool operator==(ConstIterator &iter) {
+			return pNode == iter.pNode;
+		}
+
+		bool operator!=(ConstIterator &iter) {
+			return pNode != iter.pNode;
 		}
 	};
 
@@ -140,60 +159,28 @@ public:
 
 
 
-	protected:
-		/*--- アクセサ関数 ---*/
-
-		/// <summary>
-		/// ノードを取得
-		/// </summary>
-		/// <returns>ノードポインタ</returns>
-		Node *GetNode(void) { return ConstIterator::pNode; }
-
-
-
 	public:
 		/*--- オペレータ ---*/
 
-		bool operator==(Iterator iter) {
-			return ConstIterator::pNode == iter.GetNode();
-		}
-
-		bool operator!=(Iterator iter) {
-			return ConstIterator::pNode != iter.GetNode();
-		}
-
 		Iterator operator++() {
-			assert(ConstIterator::pNode);
-			assert(ConstIterator::pNode->pNext);
+			assert(ConstIterator::GetNode());
+			assert(ConstIterator::GetNode()->pNext);
 			return Iterator(ConstIterator::pNode = ConstIterator::pNode->pNext);
 		}
 
 		Iterator operator--() {
-			assert(ConstIterator::pNode);
-			assert(ConstIterator::pNode->pPrev);
+			assert(ConstIterator::GetNode());
+			assert(ConstIterator::GetNode()->pPrev);
 			return Iterator(ConstIterator::pNode = ConstIterator::pNode->pPrev);
 		}
 
-		Iterator operator++(int) {
-			assert(ConstIterator::pNode);
-			assert(ConstIterator::pNode->pNext);
-			return Iterator(ConstIterator::pNode = ConstIterator::pNode->pNext);
-		}
-
-		Iterator operator--(int) {
-			assert(ConstIterator::pNode);
-			assert(ConstIterator::pNode->pPrev);
-			return Iterator(ConstIterator::pNode = ConstIterator::pNode->pPrev);
-		}
-
-		T *operator&() {
-			assert(ConstIterator::pNode);
-			return ConstIterator::pNode->pValue;
+		bool operator==(Iterator iter) {
+			return ConstIterator::GetNode() == iter.GetNode();
 		}
 
 		T &operator*() {
-			assert(ConstIterator::pNode);
-			assert(ConstIterator::pNode->pValue);
+			assert(ConstIterator::GetNode());
+			assert(ConstIterator::GetNode()->pValue);
 			return *ConstIterator::pNode->pValue;
 		}
 	};
@@ -237,7 +224,7 @@ public:
 	/// true:挿入成功
 	/// false:挿入失敗
 	/// </returns>
-	bool Insert(ConstIterator iter, const T&value) {
+	bool Insert(ConstIterator iter, const T &value) {
 		Node *pNode = new Node(new T(value));
 
 		if (iter.GetNode() == nullptr) {
@@ -300,95 +287,99 @@ public:
 		count = 0;
 	}
 
+	void sort(Iterator low, Iterator high, std::function<bool(T &, T &)> func) {
+		Iterator pivot = high;
+
+		Iterator sentinel = --Iterator(high);
+		for (Iterator l = low; l != sentinel; ++l) {
+			if (func(*l, *pivot)) {
+
+			}
+		}
+	}
+
 	/// <summary>
 	/// ソート
 	/// </summary>
 	/// <param name="func">ソート時の関数</param>
-	void Sort(Iterator start, Iterator end, std::function<bool(T &, T &)> func) {
-		if (start == end) return;
-		Iterator tmpStart = start;
-		Iterator tmpEnd = end;
-		Iterator sentinel;
+	void Sort(Iterator first, Iterator last, std::function<bool(T &, T &)> func) {
+		--last;
 
-		if (tmpEnd == this->end()) tmpEnd = --this->end();
+		if (first == last) return;
 
-		Iterator tmp = start;
-		Iterator pivot = Iterator(start);
+		Iterator pivot = first;
+		Iterator l = first;
+		Iterator r = last;
+		Iterator sentinel = last;
+		bool isCross = false;
 
 
 
-		while (true) {
-
+		while (r != l) {
 			print;
 
-			if (tmpStart == tmpEnd) break;
 
-			sentinel = --Iterator(tmpEnd);
+			// 先頭から末尾へ調べる
+			for (; l != r; ++l) {
+				if (l == sentinel) isCross = true;
 
-			for (; tmpStart != sentinel; ++tmpStart) {
-				if (func(*pivot, *tmpStart)) {
-					break;
-				}
-			}
-
-			sentinel = ++Iterator(tmpStart);
-
-			for (; tmpEnd != sentinel; --tmpEnd) {
-				if (!func(*pivot, *tmpEnd)) {
-					break;
-				}
+				if (func(*pivot, *l)) break;
 			}
 
 
 
 
+			// 末尾から先頭へ調べる
+			for (; r != l; --r) {
+				if (r == sentinel) isCross = true;
 
-
-
-
+				if (!func(*pivot, *r)) {
+					break;
+				}
+			}
 
 			print;
+			if (r == l) break;
 
-
-
-
-
-
-			if (!func(*tmpStart, *tmpEnd)) {
-				if (start == tmpStart) {
-					start = tmpEnd;
+			if (func(*r, *l)) {
+				// 先頭を入れ替えるなら firstも更新
+				if (l == first) {
+					first = r;
 				}
-				if (end == tmpEnd) {
-					end = tmpStart;
+				// 末尾を入れ替えるなら lastも更新
+				if (r == last) {
+					last = l;
 				}
 
 				// ノードを入れ替える
-				tmp = ++Iterator(tmpEnd);
-				Leave(tmpEnd);
-				Link(tmpStart, tmpEnd);
+				Iterator tmp = ++Iterator(r);
+				Leave(r);
+				Link(l, r);
+
+				Leave(l);
+				Link(tmp, l);
+
+				// 開始位置を入れ替える
+				tmp = l;
+				l = ++r;
+				r = --tmp;
+
 				print;
-
-				Leave(tmpStart);
-				Link(tmp, tmpStart);
-				print;
-
-
-				// 開始位置を元に戻す
-				tmp = tmpEnd;
-				tmpEnd = tmpStart;
-				tmpStart = tmp;
+				if (l == r || l == ++Iterator(r)) break;
 			}
-
-			if (++Iterator(tmpStart) == tmpEnd) break;
 		}
 
+		print;
 
-		std::cout << std::endl;
 
-		Sort(start, tmpStart, func);
-		Sort(tmpEnd, end, func);
-		return;
+		++last;
+
+
+		Sort(first, l, func);
+		Sort(l, last, func);
+		//Sort()
 	}
+
 
 	/// <summary>
 	/// 先頭のイテレータを取得
@@ -410,7 +401,7 @@ public:
 	/// 先頭のコンストイテレータを取得
 	/// </summary>
 	/// <returns>先頭のコンストイテレータ</returns>
-	ConstIterator ConstBegin(void) {
+	ConstIterator cbegin(void) {
 		return ConstIterator(pHead);
 	}
 
@@ -418,12 +409,12 @@ public:
 	/// 末尾のコンストイテレータを取得
 	/// </summary>
 	/// <returns>末尾のコンストイテレータ</returns>
-	ConstIterator ConstEnd(void) {
+	ConstIterator cend(void) {
 		return ConstIterator(&tail);
 	}
 
 private:
-	
+
 	/// <summary>
 	/// 繋げる
 	/// </summary>
@@ -441,7 +432,7 @@ private:
 		// 先頭ポインタの更新
 		if (pThis == pHead) pHead = pOther;
 	}
-	
+
 	/// <summary>
 	/// 繋げる
 	/// </summary>
