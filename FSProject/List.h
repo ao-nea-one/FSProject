@@ -97,17 +97,28 @@ public:
 	public:
 		/*--- オペレータ ---*/
 
-		bool operator==(ConstIterator &iter) {
-			return pNode == iter.pNode;
-		}
-
-		bool operator!=(ConstIterator &iter) {
-			return pNode != iter.pNode;
-		}
-
-		T *const *operator&() {
+		ConstIterator operator++() {
 			assert(pNode);
-			return pNode->pValue;
+			assert(pNode->pNext);
+			return Iterator(ConstIterator::pNode = ConstIterator::pNode->pNext);
+		}
+
+		ConstIterator operator--() {
+			assert(pNode);
+			assert(pNode->pPrev);
+			return Iterator(ConstIterator::pNode = ConstIterator::pNode->pPrev);
+		}
+
+		ConstIterator operator++(int) {
+			assert(pNode);
+			assert(pNode->pNext);
+			return Iterator(ConstIterator::pNode = ConstIterator::pNode->pNext);
+		}
+
+		ConstIterator operator--(int) {
+			assert(pNode);
+			assert(pNode->pPrev);
+			return Iterator(ConstIterator::pNode = ConstIterator::pNode->pPrev);
 		}
 
 		T const &operator* () {
@@ -115,9 +126,17 @@ public:
 			return *pNode->pValue;
 		}
 
-		T const *operator->() {
-			assert(pNode);
-			return pNode;
+		ConstIterator operator=(ConstIterator iter) {
+			pNode = iter.pNode;
+			return *this;
+		}
+
+		bool operator==(ConstIterator &iter) {
+			return pNode == iter.pNode;
+		}
+
+		bool operator!=(ConstIterator &iter) {
+			return pNode != iter.pNode;
 		}
 	};
 
@@ -140,56 +159,8 @@ public:
 
 
 
-	protected:
-		/*--- アクセサ関数 ---*/
-
-		/// <summary>
-		/// ノードを取得
-		/// </summary>
-		/// <returns>ノードポインタ</returns>
-		Node *GetNode(void) { return ConstIterator::pNode; }
-
-
-
 	public:
 		/*--- オペレータ ---*/
-
-		bool operator==(Iterator iter) {
-			return ConstIterator::pNode == iter.GetNode();
-		}
-
-		bool operator!=(Iterator iter) {
-			return ConstIterator::pNode != iter.GetNode();
-		}
-
-		Iterator operator++() {
-			assert(ConstIterator::pNode);
-			assert(ConstIterator::pNode->pNext);
-			return Iterator(ConstIterator::pNode = ConstIterator::pNode->pNext);
-		}
-
-		Iterator operator--() {
-			assert(ConstIterator::pNode);
-			assert(ConstIterator::pNode->pPrev);
-			return Iterator(ConstIterator::pNode = ConstIterator::pNode->pPrev);
-		}
-
-		Iterator operator++(int) {
-			assert(ConstIterator::pNode);
-			assert(ConstIterator::pNode->pNext);
-			return Iterator(ConstIterator::pNode = ConstIterator::pNode->pNext);
-		}
-
-		Iterator operator--(int) {
-			assert(ConstIterator::pNode);
-			assert(ConstIterator::pNode->pPrev);
-			return Iterator(ConstIterator::pNode = ConstIterator::pNode->pPrev);
-		}
-
-		T *operator&() {
-			assert(ConstIterator::pNode);
-			return ConstIterator::pNode->pValue;
-		}
 
 		T &operator*() {
 			assert(ConstIterator::pNode);
@@ -298,96 +269,6 @@ public:
 		// リセット
 		pHead = &tail;
 		count = 0;
-	}
-
-	/// <summary>
-	/// ソート
-	/// </summary>
-	/// <param name="func">ソート時の関数</param>
-	void Sort(Iterator start, Iterator end, std::function<bool(T &, T &)> func) {
-		if (start == end) return;
-		Iterator tmpStart = start;
-		Iterator tmpEnd = end;
-		Iterator sentinel;
-
-		if (tmpEnd == this->end()) tmpEnd = --this->end();
-
-		Iterator tmp = start;
-		Iterator pivot = Iterator(start);
-
-
-
-		while (true) {
-
-			print;
-
-			if (tmpStart == tmpEnd) break;
-
-			sentinel = --Iterator(tmpEnd);
-
-			for (; tmpStart != sentinel; ++tmpStart) {
-				if (func(*pivot, *tmpStart)) {
-					break;
-				}
-			}
-
-			sentinel = ++Iterator(tmpStart);
-
-			for (; tmpEnd != sentinel; --tmpEnd) {
-				if (!func(*pivot, *tmpEnd)) {
-					break;
-				}
-			}
-
-
-
-
-
-
-
-
-
-			print;
-
-
-
-
-
-
-			if (!func(*tmpStart, *tmpEnd)) {
-				if (start == tmpStart) {
-					start = tmpEnd;
-				}
-				if (end == tmpEnd) {
-					end = tmpStart;
-				}
-
-				// ノードを入れ替える
-				tmp = ++Iterator(tmpEnd);
-				Leave(tmpEnd);
-				Link(tmpStart, tmpEnd);
-				print;
-
-				Leave(tmpStart);
-				Link(tmp, tmpStart);
-				print;
-
-
-				// 開始位置を元に戻す
-				tmp = tmpEnd;
-				tmpEnd = tmpStart;
-				tmpStart = tmp;
-			}
-
-			if (++Iterator(tmpStart) == tmpEnd) break;
-		}
-
-
-		std::cout << std::endl;
-
-		Sort(start, tmpStart, func);
-		Sort(tmpEnd, end, func);
-		return;
 	}
 
 	/// <summary>

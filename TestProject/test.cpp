@@ -580,7 +580,7 @@ namespace No01_2_List {
 			list.Insert(list.end(), 1);
 			list.Insert(list.end(), 2);
 
-			List<int>::Iterator iter = --list.end();
+			List<int>::ConstIterator iter = --list.end();
 
 			Print(list, iter);
 			--iter;
