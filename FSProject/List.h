@@ -67,7 +67,7 @@ public:
 		/*--- メンバー変数 ---*/
 
 		Node *pNode = nullptr;	// 現在のノード
-
+		List<int> *pParent = nullptr;
 
 
 
@@ -75,11 +75,11 @@ public:
 		/*--- コンストラクタ ---*/
 
 		ConstIterator() = default;
-		ConstIterator(const ConstIterator &iter) : pNode(iter.pNode) { }
+		ConstIterator(const ConstIterator &iter) : pNode(iter.pNode), pParent(iter.pParent){ }
 
 	protected:
 
-		ConstIterator(Node *pNode) : pNode(pNode) { }
+		ConstIterator(Node *pNode, List<int> *pParent) : pNode(pNode), pParent(pParent) { }
 
 
 
@@ -100,25 +100,25 @@ public:
 		ConstIterator operator++() {
 			assert(pNode);
 			assert(pNode->pNext);
-			return Iterator(ConstIterator::pNode = ConstIterator::pNode->pNext);
+			return Iterator(ConstIterator::pNode = ConstIterator::pNode->pNext, pParent);
 		}
 
 		ConstIterator operator--() {
 			assert(pNode);
 			assert(pNode->pPrev);
-			return Iterator(ConstIterator::pNode = ConstIterator::pNode->pPrev);
+			return Iterator(ConstIterator::pNode = ConstIterator::pNode->pPrev, pParent);
 		}
 
 		ConstIterator operator++(int) {
 			assert(pNode);
 			assert(pNode->pNext);
-			return Iterator(ConstIterator::pNode = ConstIterator::pNode->pNext);
+			return Iterator(ConstIterator::pNode = ConstIterator::pNode->pNext, pParent);
 		}
 
 		ConstIterator operator--(int) {
 			assert(pNode);
 			assert(pNode->pPrev);
-			return Iterator(ConstIterator::pNode = ConstIterator::pNode->pPrev);
+			return Iterator(ConstIterator::pNode = ConstIterator::pNode->pPrev, pParent);
 		}
 
 		T const &operator* () {
@@ -151,11 +151,11 @@ public:
 		/*--- コンストラクタ ---*/
 
 		Iterator() = default;
-		Iterator(const Iterator &iter) : ConstIterator(iter.pNode) { }
+		Iterator(const Iterator &iter) : ConstIterator(iter.pNode, iter.pParent) { }
 
 	protected:
 
-		Iterator(Node *pNode) : ConstIterator(pNode) { }
+		Iterator(Node *pNode, List<int>* pParent) : ConstIterator(pNode, pParent) { }
 
 
 
@@ -209,11 +209,13 @@ public:
 	/// false:挿入失敗
 	/// </returns>
 	bool Insert(ConstIterator iter, const T&value) {
+		// nullチェック
+		if (iter.GetNode() == nullptr) return false;
+		// 無関係のリスト
+		if (iter.pParent != this) return false;
+
 		Node *pNode = new Node(new T(value));
 
-		if (iter.GetNode() == nullptr) {
-			return false;
-		}
 
 		// 追加処理
 		Link(iter.GetNode(), pNode);
@@ -276,7 +278,7 @@ public:
 	/// </summary>
 	/// <returns>先頭のイテレータ</returns>
 	Iterator begin(void) {
-		return Iterator(pHead);
+		return Iterator(pHead, this);
 	}
 
 	/// <summary>
@@ -284,7 +286,7 @@ public:
 	/// </summary>
 	/// <returns>末尾のイテレータ</returns>
 	Iterator end(void) {
-		return Iterator(&tail);
+		return Iterator(&tail, this);
 	}
 
 	/// <summary>
@@ -292,7 +294,7 @@ public:
 	/// </summary>
 	/// <returns>先頭のコンストイテレータ</returns>
 	ConstIterator ConstBegin(void) {
-		return ConstIterator(pHead);
+		return ConstIterator(pHead, this);
 	}
 
 	/// <summary>
@@ -300,7 +302,7 @@ public:
 	/// </summary>
 	/// <returns>末尾のコンストイテレータ</returns>
 	ConstIterator ConstEnd(void) {
-		return ConstIterator(&tail);
+		return ConstIterator(&tail, this);
 	}
 
 private:
