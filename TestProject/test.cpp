@@ -16,26 +16,8 @@ namespace No01_2_List {
 		std::cout << std::endl;
 	}
 
-	void Print(List<int> &list, List<int>::Iterator &iter) {
-		if (iter.Get()) {
-			for (auto i = list.begin(); i != list.end(); ++i) {
-				if (i == iter) {
-					std::cout << "[" << *i << "], ";
-				}
-				else {
-					std::cout << *i << ", ";
-				}
-			}
-
-			std::cout << std::endl;
-		}
-		else {
-			std::cout << "iterator value : nullptr" << std::endl;
-		}
-	}
-
 	void Print(List<int> &list, List<int>::ConstIterator &iter) {
-		if (iter.Get() && !iter.IsDummy()) {
+		if (iter == list.end()) {
 			for (auto i = list.begin(); i != list.end(); ++i) {
 				if (i == iter) {
 					std::cout << "[" << *i << "], ";
@@ -45,12 +27,10 @@ namespace No01_2_List {
 				}
 			}
 
-			if (iter.IsDummy()) std::cout << "[ Dummy ], ";
-
 			std::cout << std::endl;
 		}
 		else {
-			std::cout << "iterator value : nullptr" << std::endl;
+			std::cout << "dummy" << std::endl;
 		}
 	}
 
@@ -95,9 +75,9 @@ namespace No01_2_List {
 
 		TEST(GetDataNum, ID05_RemoveSuccess) {
 			List<int> list;
-			list.PushBack(0);
+			list.Insert(list.end(), 0);
 			// ƒm[ƒh‚Ìíœ
-			list.PopBack();
+			list.Remove(--list.end());
 
 
 			EXPECT_EQ(list.GetCount(), 0);
@@ -105,7 +85,7 @@ namespace No01_2_List {
 
 		TEST(GetDataNum, ID06_RemoveFailed) {
 			List<int> list;
-			list.PushBack(0);
+			list.Insert(list.end(), 0);
 			// ––”ö‚ğ’´‚¦‚½ƒm[ƒh‚Ìíœi¸”sj
 			EXPECT_DEATH(list.Remove(++list.end()), "Assertion failed:");
 
@@ -129,21 +109,21 @@ namespace No01_2_List {
 		TEST(InsertData, ID09_InsertBeginEmpty) {
 			List<int> list;
 			// ‹ó‚©‚ç‘}“ü
-			list.PushFront(0);
+			list.Insert(list.begin(), 0);
 		}
 
 		TEST(InsertData, ID09_InsertEndEmpty) {
 			List<int> list;
 			// ‹ó‚©‚ç‘}“ü
-			list.PushBack(0);
+			list.Insert(list.end(), 0);
 		}
 
 		TEST(InsertData, ID10_InsertBegin) {
 			List<int> list;
 
-			list.PushFront(1);
+			list.Insert(list.begin(), 1);
 			Print(list);
-			list.PushBack(2);
+			list.Insert(list.end(), 2);
 			Print(list);
 			// æ“ª‚É‘}“ü
 			list.Insert(list.begin(), 0);
@@ -153,9 +133,9 @@ namespace No01_2_List {
 		TEST(InsertData, ID11_InsertEnd) {
 			List<int> list;
 
-			list.PushFront(0);
+			list.Insert(list.begin(), 0);
 			Print(list);
-			list.PushBack(1);
+			list.Insert(list.end(), 1);
 			Print(list);
 			// ––”ö‚É‘}“ü
 			list.Insert(list.end(), 2);
@@ -165,9 +145,9 @@ namespace No01_2_List {
 		TEST(InsertData, ID12_Insert) {
 			List<int> list;
 
-			list.PushFront(0);
+			list.Insert(list.begin(), 0);
 			Print(list);
-			list.PushBack(2);
+			list.Insert(list.end(), 2);
 			Print(list);
 			// ’†ŠÔ‚É‘}“ü
 			list.Insert(++list.begin(), 1);
@@ -177,8 +157,8 @@ namespace No01_2_List {
 		TEST(InsertData, ID13_InsertConstIterator) {
 			List<int> list;
 
-			list.PushFront(0);
-			list.PushBack(1);
+			list.Insert(list.begin(), 0);
+			list.Insert(list.end(), 1);
 			list.Insert(list.ConstBegin(), 2);
 		}
 
@@ -202,8 +182,8 @@ namespace No01_2_List {
 
 		TEST(RemoveData, ID17_RemoveBegin) {
 			List<int> list;
-			list.PushFront(0);
-			list.PushBack(1);
+			list.Insert(list.begin(), 0);
+			list.Insert(list.end(), 1);
 
 			// æ“ª‚ğíœ
 			EXPECT_EQ(list.Remove(list.begin()), true);
@@ -211,8 +191,8 @@ namespace No01_2_List {
 
 		TEST(RemoveData, ID18_RemoveEnd) {
 			List<int> list;
-			list.PushFront(0);
-			list.PushBack(1);
+			list.Insert(list.begin(), 0);
+			list.Insert(list.end(), 1);
 
 			// ––”ö‚ğíœ
 			EXPECT_EQ(list.Remove(list.end()), false);
@@ -220,8 +200,8 @@ namespace No01_2_List {
 
 		TEST(RemoveData, ID19_Remove) {
 			List<int> list;
-			list.PushFront(0);
-			list.PushBack(2);
+			list.Insert(list.begin(), 0);
+			list.Insert(list.end(), 2);
 			list.Insert(++list.begin(), 1);
 			Print(list);
 
@@ -232,8 +212,8 @@ namespace No01_2_List {
 
 		TEST(RemoveData, ID20_RemoveConstIterator) {
 			List<int> list;
-			list.PushFront(0);
-			list.PushBack(1);
+			list.Insert(list.begin(), 0);
+			list.Insert(list.end(), 1);
 			Print(list);
 
 			// ƒRƒ“ƒXƒgƒCƒeƒŒ[ƒ^‚Åíœ
@@ -243,8 +223,8 @@ namespace No01_2_List {
 
 		TEST(RemoveData, ID21_RemoveNone) {
 			List<int> list;
-			list.PushFront(0);
-			list.PushBack(1);
+			list.Insert(list.begin(), 0);
+			list.Insert(list.end(), 1);
 
 			// •s³‚ÈƒCƒeƒŒ[ƒ^‚Åíœ
 			EXPECT_EQ(list.Remove(List<int>::Iterator()), false);
@@ -259,14 +239,14 @@ namespace No01_2_List {
 		TEST(GetBeginIterator, ID23_GetEmpty) {
 			List<int> list;
 			// ‹ó‚Åæ“¾
-			std::cout << "is dummy : " << list.begin().IsDummy() << std::endl;
+			Print(list, list.begin());
 		}
 
 		TEST(GetBeginIterator, ID24_GetIterator1) {
 			List<int> list;
 
 			// —v‘f1‚Ìê‡‚Åæ“¾
-			list.PushBack(0);
+			list.Insert(list.end(), 0);
 			Print(list, list.begin());
 		}
 
@@ -274,10 +254,10 @@ namespace No01_2_List {
 			List<int> list;
 
 			// —v‘f•¡”‚Ìê‡‚Åæ“¾
-			list.PushBack(0);
+			list.Insert(list.end(), 0);
 			Print(list, list.begin());
 
-			list.PushBack(1);
+			list.Insert(list.end(), 1);
 			Print(list, list.begin());
 		}
 
@@ -285,10 +265,10 @@ namespace No01_2_List {
 			List<int> list;
 
 			// —v‘f•¡”‚Ìê‡‚Åæ“¾
-			list.PushFront(0);
+			list.Insert(list.begin(), 0);
 			Print(list, list.begin());
 
-			list.PushBack(1);
+			list.Insert(list.end(), 1);
 			Print(list, list.begin());
 
 			list.Insert(++list.begin(), 2);
@@ -298,18 +278,18 @@ namespace No01_2_List {
 		TEST(GetBeginIterator, ID27_GetIteratorRemove) {
 			List<int> list;
 
-			list.PushFront(0);
-			list.PushBack(1);
+			list.Insert(list.begin(), 0);
+			list.Insert(list.end(), 1);
 			list.Insert(++list.begin(), 2);
 
 			// —v‘f•¡”iíœj‚Ìê‡‚Åæ“¾
 			list.Insert(++list.begin(), 2);
 			Print(list, list.begin());
 
-			list.PopBack();
+			list.Remove(--list.end());
 			Print(list, list.begin());
 
-			list.PopFront();
+			list.Remove(list.begin());
 			Print(list, list.begin());
 		}
 	}
@@ -322,14 +302,14 @@ namespace No01_2_List {
 		TEST(GetBeginConstIteratorTest, ID29_GetEmpty) {
 			List<int> list;
 			// ‹ó‚Åæ“¾
-			std::cout << "is dummy : " << list.ConstBegin().IsDummy() << std::endl;
+			Print(list, list.ConstBegin());
 		}
 
 		TEST(GetBeginConstIteratorTest, ID30_GetIterator1) {
 			List<int> list;
 
 			// —v‘f1‚Ìê‡‚Åæ“¾
-			list.PushBack(0);
+			list.Insert(list.end(), 0);
 			Print(list, list.ConstBegin());
 		}
 
@@ -337,10 +317,10 @@ namespace No01_2_List {
 			List<int> list;
 
 			// —v‘f•¡”‚Ìê‡‚Åæ“¾
-			list.PushBack(0);
+			list.Insert(list.end(), 0);
 			Print(list, list.ConstBegin());
 
-			list.PushBack(1);
+			list.Insert(list.end(), 1);
 			Print(list, list.ConstBegin());
 		}
 
@@ -348,10 +328,10 @@ namespace No01_2_List {
 			List<int> list;
 
 			// —v‘f•¡”‚Ìê‡‚Åæ“¾
-			list.PushFront(0);
+			list.Insert(list.begin(), 0);
 			Print(list, list.ConstBegin());
 
-			list.PushBack(1);
+			list.Insert(list.end(), 1);
 			Print(list, list.ConstBegin());
 
 			list.Insert(++list.begin(), 2);
@@ -361,18 +341,18 @@ namespace No01_2_List {
 		TEST(GetBeginConstIteratorTest, ID33_GetIteratorRemove) {
 			List<int> list;
 
-			list.PushFront(0);
-			list.PushBack(1);
+			list.Insert(list.begin(), 0);
+			list.Insert(list.end(), 1);
 			list.Insert(++list.begin(), 2);
 
 			// —v‘f•¡”iíœj‚Ìê‡‚Åæ“¾
 			list.Remove(++list.begin());
 			Print(list, list.ConstBegin());
 
-			list.PopBack();
+			list.Remove(--list.end());
 			Print(list, list.ConstBegin());
 
-			list.PopFront();
+			list.Remove(list.begin());
 			Print(list, list.ConstBegin());
 		}
 	}
@@ -385,14 +365,14 @@ namespace No01_2_List {
 		TEST(GetEndIterator, ID35_GetEmpty) {
 			List<int> list;
 			// ‹ó‚Åæ“¾
-			std::cout << "is dummy : " << list.end().IsDummy() << std::endl;
+			Print(list, list.end());
 		}
 
 		TEST(GetEndIterator, ID36_GetIterator1) {
 			List<int> list;
 
 			// —v‘f1‚Ìê‡‚Åæ“¾
-			list.PushBack(0);
+			list.Insert(list.end(), 0);
 			Print(list, list.end());
 		}
 
@@ -400,10 +380,10 @@ namespace No01_2_List {
 			List<int> list;
 
 			// —v‘f•¡”‚Ìê‡‚Åæ“¾
-			list.PushBack(0);
+			list.Insert(list.end(), 0);
 			Print(list, list.end());
 
-			list.PushBack(1);
+			list.Insert(list.end(), 1);
 			Print(list, list.end());
 		}
 
@@ -411,10 +391,10 @@ namespace No01_2_List {
 			List<int> list;
 
 			// —v‘f•¡”‚Ìê‡‚Åæ“¾
-			list.PushFront(0);
+			list.Insert(list.begin(), 0);
 			Print(list, --list.end());
 
-			list.PushBack(2);
+			list.Insert(list.end(), 2);
 			Print(list, --list.end());
 
 			list.Insert(++list.begin(), 1);
@@ -424,18 +404,18 @@ namespace No01_2_List {
 		TEST(GetEndIterator, ID39_GetIteratorRemove) {
 			List<int> list;
 
-			list.PushFront(0);
-			list.PushBack(2);
+			list.Insert(list.begin(), 0);
+			list.Insert(list.end(), 2);
 			list.Insert(++list.begin(), 1);
 
 			// —v‘f•¡”iíœj‚Ìê‡‚Åæ“¾
 			list.Remove(++list.begin());
 			Print(list, list.end());
 
-			list.PopBack();
+			list.Remove(--list.end());
 			Print(list, list.end());
 
-			list.PopFront();
+			list.Remove(list.begin());
 			Print(list, list.end());
 		}
 	}
@@ -448,14 +428,14 @@ namespace No01_2_List {
 		TEST(GetEndConstIteratorTest, ID41_GetEmpty) {
 			List<int> list;
 			// ‹ó‚Åæ“¾
-			std::cout << "is dummy : " << list.ConstEnd().IsDummy() << std::endl;
+			Print(list, list.ConstEnd());
 		}
 
 		TEST(GetEndConstIteratorTest, ID42_GetIterator1) {
 			List<int> list;
 
 			// —v‘f1‚Ìê‡‚Åæ“¾
-			list.PushBack(0);
+			list.Insert(list.end(), 0);
 			Print(list, list.ConstEnd());
 		}
 
@@ -463,10 +443,10 @@ namespace No01_2_List {
 			List<int> list;
 
 			// —v‘f•¡”‚Ìê‡‚Åæ“¾
-			list.PushBack(0);
+			list.Insert(list.end(), 0);
 			Print(list, list.ConstEnd());
 
-			list.PushBack(1);
+			list.Insert(list.end(), 1);
 			Print(list, list.ConstEnd());
 		}
 
@@ -474,10 +454,10 @@ namespace No01_2_List {
 			List<int> list;
 
 			// —v‘f•¡”‚Ìê‡‚Åæ“¾
-			list.PushFront(0);
+			list.Insert(list.begin(), 0);
 			Print(list, list.ConstEnd());
 
-			list.PushBack(2);
+			list.Insert(list.end(), 2);
 			Print(list, list.ConstEnd());
 
 			list.Insert(++list.begin(), 1);
@@ -487,18 +467,18 @@ namespace No01_2_List {
 		TEST(GetEndConstIteratorTest, ID45_GetIteratorRemove) {
 			List<int> list;
 
-			list.PushFront(0);
-			list.PushBack(2);
+			list.Insert(list.begin(), 0);
+			list.Insert(list.end(), 2);
 			list.Insert(++list.begin(), 1);
 
 			// —v‘f•¡”iíœj‚Ìê‡‚Åæ“¾
 			list.Remove(++list.begin());
 			Print(list, list.ConstEnd());
 
-			list.PopBack();
+			list.Remove(--list.end());
 			Print(list, list.ConstEnd());
 
-			list.PopFront();
+			list.Remove(list.begin());
 			Print(list, list.ConstEnd());
 		}
 	}
@@ -516,7 +496,7 @@ namespace No01_2_List {
 
 		TEST(UserGetIterator, ID01_SetIteratorValue) {
 			List<int> list;
-			list.PushBack(0);
+			list.Insert(list.end(), 0);
 
 			Print(list);
 			*list.begin() = 1;
@@ -559,9 +539,9 @@ namespace No01_2_List {
 
 		TEST(UserIncrement, ID08_10_Increment) {
 			List<int> list;
-			list.PushBack(0);
-			list.PushBack(1);
-			list.PushBack(2);
+			list.Insert(list.end(), 0);
+			list.Insert(list.end(), 1);
+			list.Insert(list.end(), 2);
 
 			List<int>::Iterator iter = list.begin();
 
@@ -596,9 +576,9 @@ namespace No01_2_List {
 
 		TEST(UserDecrement, ID14_16_Decrement) {
 			List<int> list;
-			list.PushBack(0);
-			list.PushBack(1);
-			list.PushBack(2);
+			list.Insert(list.end(), 0);
+			list.Insert(list.end(), 1);
+			list.Insert(list.end(), 2);
 
 			List<int>::Iterator iter = --list.end();
 
@@ -617,9 +597,9 @@ namespace No01_2_List {
 	namespace UserIteratorTest {
 		TEST(UserIterator, ID18_Copy) {
 			List<int> list;
-			list.PushBack(0);
-			list.PushBack(1);
-			list.PushBack(2);
+			list.Insert(list.end(), 0);
+			list.Insert(list.end(), 1);
+			list.Insert(list.end(), 2);
 			List<int>::Iterator iter = list.end();
 
 			EXPECT_EQ((iter == list.end()), true);
@@ -627,9 +607,9 @@ namespace No01_2_List {
 
 		TEST(UserIterator, ID20_Assin) {
 			List<int> list;
-			list.PushBack(0);
-			list.PushBack(1);
-			list.PushBack(2);
+			list.Insert(list.end(), 0);
+			list.Insert(list.end(), 1);
+			list.Insert(list.end(), 2);
 			List<int>::Iterator iter = list.begin();
 			iter = list.end();
 
@@ -645,9 +625,9 @@ namespace No01_2_List {
 		TEST(UserIterator, ID22_Equal) {
 			List<int> list;
 
-			list.PushBack(0);
-			list.PushBack(1);
-			list.PushBack(2);
+			list.Insert(list.end(), 0);
+			list.Insert(list.end(), 1);
+			list.Insert(list.end(), 2);
 
 			EXPECT_EQ((list.begin() == list.begin()), true);
 		}
@@ -655,9 +635,9 @@ namespace No01_2_List {
 		TEST(UserIterator, ID23_Equal) {
 			List<int> list;
 
-			list.PushBack(0);
-			list.PushBack(1);
-			list.PushBack(2);
+			list.Insert(list.end(), 0);
+			list.Insert(list.end(), 1);
+			list.Insert(list.end(), 2);
 
 			EXPECT_EQ((list.begin() == list.end()), false);
 		}
@@ -671,9 +651,9 @@ namespace No01_2_List {
 		TEST(UserIterator, ID25_NotEqual) {
 			List<int> list;
 
-			list.PushBack(0);
-			list.PushBack(1);
-			list.PushBack(2);
+			list.Insert(list.end(), 0);
+			list.Insert(list.end(), 1);
+			list.Insert(list.end(), 2);
 
 			EXPECT_EQ((list.begin() != list.begin()), false);
 		}
@@ -681,9 +661,9 @@ namespace No01_2_List {
 		TEST(UserIterator, ID26_NotEqual) {
 			List<int> list;
 
-			list.PushBack(0);
-			list.PushBack(1);
-			list.PushBack(2);
+			list.Insert(list.end(), 0);
+			list.Insert(list.end(), 1);
+			list.Insert(list.end(), 2);
 
 			EXPECT_EQ((list.begin() != list.end()), true);
 		}

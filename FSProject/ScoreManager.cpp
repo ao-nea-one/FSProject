@@ -32,7 +32,7 @@ void ScoreManager::Load(std::string filePath) {
 		sstream >> scoreInfo.score;
 		sstream >> scoreInfo.playerName;
 
-		scores.PushBack(scoreInfo);
+		scores.Insert(scores.end(), scoreInfo);
 	}
 }
 

@@ -9,6 +9,20 @@
 
 /*--- include ---*/
 #include <cassert>
+#include <functional>
+#include <iostream>
+
+
+
+#define print {\
+Iterator e = this->end();\
+for (Iterator j = this->begin(); j != e; j++) {\
+	if (j == tmpStart || j == tmpEnd) std::cout << "[";\
+	std::cout << *j;\
+	if (j == tmpStart || j == tmpEnd) std::cout << "]";\
+}\
+std::cout << std::endl;\
+}\
 
 
 
@@ -23,165 +37,22 @@ private:
 	/// <summary>
 	/// ノードクラス:インターフェース
 	/// </summary>
-	class INode {
-	private:
+	struct Node {
 		/*--- メンバー変数 ---*/
 
-		INode *pNext = nullptr;	// 次のノード
-		INode *pPrev = nullptr;	// 前のノード
-
-		friend List;
-
-
-
-	public:
-		/*--- コンストラクタ ---*/
-
-		INode() = default;
+		T *pValue = nullptr;
+		Node *pNext = nullptr;	// 次のノード
+		Node *pPrev = nullptr;	// 前のノード
 
 
 
-	public:
-		/*--- メンバー関数 ---*/
-
-		/// <summary>
-		/// nextに繋げる
-		/// </summary>
-		/// <param name="pNode"></param>
-		/// <returns></returns>
-		T *LinkNext(INode *pNode) {
-			// nullチェック
-			if (pNode == nullptr) return nullptr;
-
-			pNode->pNext = this->pNext;
-			this->pNext = pNode;
-			pNode->pPrev = this;
-			if (pNode->pNext) pNode->pNext->pPrev = pNode;
-		}
-
-		/// <summary>
-		/// previousに繋げる
-		/// </summary>
-		/// <param name="pNode"></param>
-		/// <returns></returns>
-		T *LinkPrevious(INode *pNode) {
-			// nullチェック
-			if (pNode == nullptr) return nullptr;
-
-			pNode->pPrev = this->pPrev;
-			this->pPrev = pNode;
-			pNode->pNext = this;
-			if (pNode->pPrev) pNode->pPrev->pNext = pNode;
-		}
-
-		/// <summary>
-		/// 離す
-		/// </summary>
-		void Leave() {
-			if (pNext) pNext->pPrev = pPrev;
-			if (pPrev) pPrev->pNext = pNext;
-			pNext = pPrev = nullptr;
-		}
-
-		/// <summary>
-		/// ダミーノードか否か
-		/// </summary>
-		/// <returns>
-		/// true:ダミーノード
-		/// false:デフォルトノード
-		/// </returns>
-		virtual bool IsDummy(void) = 0;
-
-		/// <summary>
-		/// 値を取得
-		/// </summary>
-		/// <returns>格納する値のポインタ</returns>
-		virtual T *Get(void) = 0;
-	};
-
-	/// <summary>
-	/// ノードクラス
-	/// </summary>
-	class Node : public INode {
-	private:
-		/*--- メンバー変数 ---*/
-
-		T value;				// 値
-
-		friend List;
-
-
-
-	public:
 		/*--- コンストラクタ ---*/
 
 		Node() = default;
-		Node(const T &value) : value(value) { }
-
-
-
-	public:
-		/*--- メンバー関数 ---*/
-
-		/// <summary>
-		/// ダミーノードか否か
-		/// </summary>
-		/// <returns>
-		/// true:ダミーノード
-		/// false:デフォルトノード
-		/// </returns>
-		bool IsDummy(void) override { return false; }
-
-
-
-	public:
-		/*--- アクセサ関数 ---*/
-
-		/// <summary>
-		/// 値を取得
-		/// </summary>
-		/// <returns>格納する値のポインタ</returns>
-		T *Get(void) override { return &value; }
+		Node(T* pValue) : pValue(pValue) { }
 	};
 
-	/// <summary>
-	/// ダミーノードクラス（値を保持しない）
-	/// </summary>
-	class DummyNode : public INode {
-	private:
-		/*--- メンバー変数 ---*/
 
-		friend List;
-
-
-
-	public:
-		/*--- コンストラクタ ---*/
-
-		DummyNode() = default;
-
-
-
-	public:
-		/*--- メンバー関数 ---*/
-
-		/// <summary>
-		/// ダミーノードか否か
-		/// </summary>
-		/// <returns>true:ダミーノード　false:デフォルトノード</returns>
-		bool IsDummy(void) override { return true; }
-
-
-
-	public:
-		/*--- アクセサ関数 ---*/
-
-		/// <summary>
-		/// 値を取得
-		/// </summary>
-		/// <returns>nullptr</returns>
-		T *Get(void) override { return nullptr; }
-	};
 
 public:
 
@@ -189,12 +60,14 @@ public:
 	/// コンストイテレータクラス
 	/// </summary>
 	class ConstIterator {
+
+		friend List;
+
 	protected:
 		/*--- メンバー変数 ---*/
 
-		INode *pNode = nullptr;	// 現在のノード
+		Node *pNode = nullptr;	// 現在のノード
 
-		friend List;
 
 
 
@@ -206,30 +79,7 @@ public:
 
 	protected:
 
-		ConstIterator(INode *pNode) : pNode(pNode) { }
-
-
-
-	public:
-		/*--- メンバー関数 ---*/
-
-		/// <summary>
-		/// ダミーノードか否か
-		/// </summary>
-		/// <returns>
-		/// true:ダミーノード
-		/// false:nullptr or デフォルトノード 
-		/// </returns>
-		bool IsDummy(void) { return pNode ? pNode->IsDummy() : false; }
-
-		/// <summary>
-		/// ノードが保持されているか否か
-		/// </summary>
-		/// <returns>
-		/// true:nullptr
-		/// false:ノードが存在する
-		/// </returns>
-		bool IsEmpty(void) { return pNode == nullptr; }
+		ConstIterator(Node *pNode) : pNode(pNode) { }
 
 
 
@@ -240,18 +90,7 @@ public:
 		/// ノードを取得
 		/// </summary>
 		/// <returns>ノードポインタ</returns>
-		INode *GetNode(void) { return pNode; }
-
-	public:
-
-		/// <summary>
-		/// 値を取得する
-		/// </summary>
-		/// <returns>ノードに格納されている値</returns>
-		T *Get(void) {
-			assert(pNode);
-			return pNode->Get();
-		}
+		Node *GetNode(void) { return pNode; }
 
 
 
@@ -268,12 +107,12 @@ public:
 
 		T *const *operator&() {
 			assert(pNode);
-			return &pNode->Get();
+			return pNode->pValue;
 		}
 
 		T const &operator* () {
 			assert(pNode);
-			pNode->Get();
+			return *pNode->pValue;
 		}
 
 		T const *operator->() {
@@ -286,11 +125,8 @@ public:
 	/// イテレータクラス
 	/// </summary>
 	class Iterator : public ConstIterator {
-	private:
 
 		friend List;
-
-
 
 	public:
 		/*--- コンストラクタ ---*/
@@ -300,12 +136,31 @@ public:
 
 	protected:
 
-		Iterator(INode *pNode) : ConstIterator(pNode) { }
+		Iterator(Node *pNode) : ConstIterator(pNode) { }
+
+
+
+	protected:
+		/*--- アクセサ関数 ---*/
+
+		/// <summary>
+		/// ノードを取得
+		/// </summary>
+		/// <returns>ノードポインタ</returns>
+		Node *GetNode(void) { return ConstIterator::pNode; }
 
 
 
 	public:
 		/*--- オペレータ ---*/
+
+		bool operator==(Iterator iter) {
+			return ConstIterator::pNode == iter.GetNode();
+		}
+
+		bool operator!=(Iterator iter) {
+			return ConstIterator::pNode != iter.GetNode();
+		}
 
 		Iterator operator++() {
 			assert(ConstIterator::pNode);
@@ -333,13 +188,13 @@ public:
 
 		T *operator&() {
 			assert(ConstIterator::pNode);
-			return ConstIterator::Get();
+			return ConstIterator::pNode->pValue;
 		}
 
 		T &operator*() {
 			assert(ConstIterator::pNode);
-			assert(ConstIterator::Get());
-			return *ConstIterator::Get();
+			assert(ConstIterator::pNode->pValue);
+			return *ConstIterator::pNode->pValue;
 		}
 	};
 
@@ -348,8 +203,8 @@ public:
 private:
 	/*--- メンバー変数 ---*/
 
-	INode *pHead = nullptr;	// 先頭ノード
-	DummyNode tail;			// 末尾ノード
+	Node *pHead = nullptr;	// 先頭ノード
+	Node tail;				// 末尾ノード
 	unsigned int count = 0;	// 要素数
 
 
@@ -374,44 +229,6 @@ public:
 	/*--- メンバー関数 ---*/
 
 	/// <summary>
-	/// 先頭に追加する
-	/// </summary>
-	/// <param name="value">追加する値</param>
-	void PushFront(const T &value) {
-		Insert(begin(), value);
-	}
-
-	/// <summary>
-	/// 末尾に追加する
-	/// </summary>
-	/// <param name="value">追加する値</param>
-	void PushBack(const T &value) {
-		Insert(end(), value);
-	}
-
-	/// <summary>
-	/// 先頭を削除する
-	/// </summary>
-	/// <returns>
-	/// true:削除成功
-	/// false:削除失敗
-	/// </returns>
-	bool PopFront(void) {
-		return Remove(begin());
-	}
-
-	/// <summary>
-	/// 末尾を削除する
-	/// </summary>
-	/// <returns>
-	/// true:削除成功
-	/// false:削除失敗
-	/// </returns>
-	bool PopBack(void) {
-		return Remove(--end());
-	}
-
-	/// <summary>
 	/// 挿入
 	/// </summary>
 	/// <param name="iter">挿入先のイテレータ</param>
@@ -421,18 +238,14 @@ public:
 	/// false:挿入失敗
 	/// </returns>
 	bool Insert(ConstIterator iter, const T&value) {
-		Node *pNode = new Node(value);
+		Node *pNode = new Node(new T(value));
 
 		if (iter.GetNode() == nullptr) {
 			return false;
 		}
-		// 先頭ポインタを更新
-		else if (iter.GetNode() == pHead) {
-			pHead = pNode;
-		}
 
 		// 追加処理
-		iter.GetNode()->LinkPrevious(pNode);
+		Link(iter.GetNode(), pNode);
 
 
 		count++;
@@ -449,19 +262,15 @@ public:
 	/// false:削除失敗
 	/// </returns>
 	bool Remove(ConstIterator iter) {
-		INode *pNode = iter.GetNode();
+		Node *pNode = iter.GetNode();
 
 		if (pNode == &tail || pNode == nullptr) {
 			return false;
 		}
 		// 削除処理
 		else if (pNode) {
-			// 先頭を削除するなら更新
-			if (pNode == pHead) {
-				pHead = pNode->pNext;
-			}
-
-			pNode->Leave();
+			Leave(pNode);
+			delete pNode->pValue;
 			delete pNode;
 
 			count--;
@@ -473,14 +282,17 @@ public:
 	/// 全て削除
 	/// </summary>
 	void Clear(void) {
-		INode *pTmpNode;
+		if (count == 0) return;
+
+		Node *pNode;
 
 		// ノードを全て削除
 		while (pHead != &tail) {
-			pTmpNode = pHead;
+			pNode = pHead;
 			pHead = pHead->pNext;
 
-			delete pTmpNode;
+			delete pNode->pValue;
+			delete pNode;
 		}
 
 		// リセット
@@ -488,20 +300,178 @@ public:
 		count = 0;
 	}
 
+	/// <summary>
+	/// ソート
+	/// </summary>
+	/// <param name="func">ソート時の関数</param>
+	void Sort(Iterator start, Iterator end, std::function<bool(T &, T &)> func) {
+		if (start == end) return;
+		Iterator tmpStart = start;
+		Iterator tmpEnd = end;
+		Iterator sentinel;
+
+		if (tmpEnd == this->end()) tmpEnd = --this->end();
+
+		Iterator tmp = start;
+		Iterator pivot = Iterator(start);
+
+
+
+		while (true) {
+
+			print;
+
+			if (tmpStart == tmpEnd) break;
+
+			sentinel = --Iterator(tmpEnd);
+
+			for (; tmpStart != sentinel; ++tmpStart) {
+				if (func(*pivot, *tmpStart)) {
+					break;
+				}
+			}
+
+			sentinel = ++Iterator(tmpStart);
+
+			for (; tmpEnd != sentinel; --tmpEnd) {
+				if (!func(*pivot, *tmpEnd)) {
+					break;
+				}
+			}
+
+
+
+
+
+
+
+
+
+			print;
+
+
+
+
+
+
+			if (!func(*tmpStart, *tmpEnd)) {
+				if (start == tmpStart) {
+					start = tmpEnd;
+				}
+				if (end == tmpEnd) {
+					end = tmpStart;
+				}
+
+				// ノードを入れ替える
+				tmp = ++Iterator(tmpEnd);
+				Leave(tmpEnd);
+				Link(tmpStart, tmpEnd);
+				print;
+
+				Leave(tmpStart);
+				Link(tmp, tmpStart);
+				print;
+
+
+				// 開始位置を元に戻す
+				tmp = tmpEnd;
+				tmpEnd = tmpStart;
+				tmpStart = tmp;
+			}
+
+			if (++Iterator(tmpStart) == tmpEnd) break;
+		}
+
+
+		std::cout << std::endl;
+
+		Sort(start, tmpStart, func);
+		Sort(tmpEnd, end, func);
+		return;
+	}
+
+	/// <summary>
+	/// 先頭のイテレータを取得
+	/// </summary>
+	/// <returns>先頭のイテレータ</returns>
 	Iterator begin(void) {
 		return Iterator(pHead);
 	}
 
+	/// <summary>
+	/// 末尾のイテレータを取得
+	/// </summary>
+	/// <returns>末尾のイテレータ</returns>
 	Iterator end(void) {
 		return Iterator(&tail);
 	}
 
+	/// <summary>
+	/// 先頭のコンストイテレータを取得
+	/// </summary>
+	/// <returns>先頭のコンストイテレータ</returns>
 	ConstIterator ConstBegin(void) {
 		return ConstIterator(pHead);
 	}
 
+	/// <summary>
+	/// 末尾のコンストイテレータを取得
+	/// </summary>
+	/// <returns>末尾のコンストイテレータ</returns>
 	ConstIterator ConstEnd(void) {
 		return ConstIterator(&tail);
+	}
+
+private:
+	
+	/// <summary>
+	/// 繋げる
+	/// </summary>
+	/// <param name="pThis">場所を指定するノードポインタ</param>
+	/// <param name="pOther">新しく繋げたいノードポインタ</param>
+	void Link(Node *pThis, Node *pOther) {
+		if (pThis == pOther) return;
+
+		// 繋げる処理
+		pOther->pPrev = pThis->pPrev;
+		pThis->pPrev = pOther;
+		pOther->pNext = pThis;
+		if (pOther->pPrev) pOther->pPrev->pNext = pOther;
+
+		// 先頭ポインタの更新
+		if (pThis == pHead) pHead = pOther;
+	}
+	
+	/// <summary>
+	/// 繋げる
+	/// </summary>
+	/// <param name="thisIter">場所を指定するイテレータ</param>
+	/// <param name="otherIter">新しく繋げたいイテレータ</param>
+	void Link(Iterator thisIter, Iterator otherIter) {
+		Link(thisIter.GetNode(), otherIter.GetNode());
+	}
+
+	/// <summary>
+	/// 離す
+	/// </summary>
+	/// <param name="pThis">接続を切るノードポインタ</param>
+	void Leave(Node *pThis) {
+		// 先頭ポインタの更新
+		if (pThis == pHead) pHead = pHead->pNext;
+
+
+		// 切り離す処理
+		if (pThis->pNext) pThis->pNext->pPrev = pThis->pPrev;
+		if (pThis->pPrev) pThis->pPrev->pNext = pThis->pNext;
+		pThis->pNext = pThis->pPrev = nullptr;
+	}
+
+	/// <summary>
+	/// 離す
+	/// </summary>
+	/// <param name="thisIter">接続を切るイテレータ</param>
+	void Leave(Iterator thisIter) {
+		Leave(thisIter.GetNode());
 	}
 
 
