@@ -13,25 +13,7 @@
 #include <iostream>
 #include <algorithm>
 
-#define print_by_range(l, r) {\
-for (Iterator j = begin(); j != end(); ++j) {\
-	if (j == l) std::cout << "[";\
-	std::cout << *j;\
-	if (j == --Iterator(r)) std::cout << "]";\
-	std::cout << ", ";\
-}\
-std::cout << std::endl;}\
 
-
-
-#define print_by_once(i) {\
-for (Iterator j = begin(); j != end(); ++j) {\
-	if (j == i) std::cout << "[";\
-	std::cout << *j;\
-	if (j == i) std::cout << "]";\
-	std::cout << ", ";\
-}\
-std::cout << std::endl;}\
 
 /// <summary>
 /// リストクラス
