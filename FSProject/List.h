@@ -14,18 +14,6 @@
 
 
 
-#define print {\
-Iterator e = this->end();\
-for (Iterator j = this->begin(); j != e; j++) {\
-	if (j == tmpStart || j == tmpEnd) std::cout << "[";\
-	std::cout << *j;\
-	if (j == tmpStart || j == tmpEnd) std::cout << "]";\
-}\
-std::cout << std::endl;\
-}\
-
-
-
 /// <summary>
 /// リストクラス
 /// </summary>
@@ -285,6 +273,88 @@ public:
 
 		// リセット
 		count = 0;
+	}
+
+	/// <summary>
+	/// ソート
+	/// </summary>
+	/// <param name="func">ソート時の関数</param>
+	void Sort(Iterator first, Iterator last, std::function<bool(T &, T &)> func) {
+		--last;
+
+		if (first == last) return;
+
+		Iterator pivot = first;
+		Iterator l = first;
+		Iterator r = last;
+		Iterator sentinel = last;
+		bool isCross = false;
+
+
+
+		while (r != l) {
+			print;
+
+
+			// 先頭から末尾へ調べる
+			for (; l != r; ++l) {
+				if (l == sentinel) isCross = true;
+
+				if (func(*pivot, *l)) break;
+			}
+
+
+
+
+			// 末尾から先頭へ調べる
+			for (; r != l; --r) {
+				if (r == sentinel) isCross = true;
+
+				if (!func(*pivot, *r)) {
+					break;
+				}
+			}
+
+			print;
+			if (r == l) break;
+
+			if (func(*r, *l)) {
+				// 先頭を入れ替えるなら firstも更新
+				if (l == first) {
+					first = r;
+				}
+				// 末尾を入れ替えるなら lastも更新
+				if (r == last) {
+					last = l;
+				}
+
+				// ノードを入れ替える
+				Iterator tmp = ++Iterator(r);
+				Leave(r);
+				Link(l, r);
+
+				Leave(l);
+				Link(tmp, l);
+
+				// 開始位置を入れ替える
+				tmp = l;
+				l = ++r;
+				r = --tmp;
+
+				print;
+				if (l == r || l == ++Iterator(r)) break;
+			}
+		}
+
+		print;
+
+
+		++last;
+
+
+		Sort(first, l, func);
+		Sort(l, last, func);
+		//Sort()
 	}
 
 	/// <summary>
