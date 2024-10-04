@@ -453,7 +453,7 @@ public:
 	/// 要素数を取得
 	/// </summary>
 	/// <returns>要素数</returns>
-	unsigned int GetCount(void) { return count; }
+	unsigned int GetCount(void) const { return count; }
 };
 
 
