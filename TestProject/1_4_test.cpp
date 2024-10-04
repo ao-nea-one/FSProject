@@ -4,7 +4,6 @@
 
 #include "../FSProject/List.h"
 
-#define NO01_04_Test
 #ifdef NO01_04_Test
 
 namespace No01_04_QuickSort {

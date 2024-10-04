@@ -7,6 +7,10 @@
     <ClCompile Include="pch.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="1_4_test.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="1_5.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
