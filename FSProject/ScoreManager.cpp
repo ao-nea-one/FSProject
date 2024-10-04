@@ -41,6 +41,8 @@ void ScoreManager::Load(std::string filePath) {
 
 
 void ScoreManager::Display(void) {
+
+	scores.Sort(scores.begin(), scores.end(), [](ScoreInfo &a, ScoreInfo &b) { return a.score >= b.score; });
 	for (auto &info : scores) {
 		std::cout << info.playerName << " : " << info.score << std::endl;
 	}

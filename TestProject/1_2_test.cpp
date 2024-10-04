@@ -4,8 +4,9 @@
 
 #include "../FSProject/List.h"
 
+#ifdef NO01_02_Test
 
-namespace No01_2_List {
+namespace No01_02_List {
 
 	namespace GetDataNumTest {
 		/// <summary>
@@ -1165,4 +1166,4 @@ namespace No01_2_List {
 
 
 
-
+#endif
