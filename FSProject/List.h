@@ -86,14 +86,14 @@ public:
 		/// ノードを取得
 		/// </summary>
 		/// <returns>ノードポインタ</returns>
-		Node *GetNode(void) const { return pNode; }
+		Node *GetNode(void) { return pNode; }
 
 
 
 	public:
 		/*--- オペレータ ---*/
 
-		ConstIterator operator++() {
+		ConstIterator &operator++() {
 			assert(pNode);
 			assert(pNode != &pParent->dummy);
 
@@ -101,7 +101,7 @@ public:
 			return *this;
 		}
 
-		ConstIterator operator--() {
+		ConstIterator &operator--() {
 			assert(pNode);
 			assert(pNode->pPrev != &pParent->dummy);
 
@@ -109,7 +109,7 @@ public:
 			return *this;
 		}
 
-		ConstIterator operator++(int) {
+		ConstIterator &operator++(int) {
 			assert(pNode);
 			assert(pNode != &pParent->dummy);
 
@@ -117,7 +117,7 @@ public:
 			return ConstIterator(pNode->pPrev, pParent);
 		}
 
-		ConstIterator operator--(int) {
+		ConstIterator &operator--(int) {
 			assert(pNode);
 			assert(pNode->pPrev != &pParent->dummy);
 
@@ -130,7 +130,7 @@ public:
 			return *pNode->pValue;
 		}
 
-		ConstIterator operator=(ConstIterator iter) {
+		ConstIterator operator=(const ConstIterator &iter) {
 			if (pParent != iter.pParent) return *this;
 
 			pNode = iter.pNode;
@@ -251,6 +251,8 @@ public:
 			count--;
 			return true;
 		}
+
+		return false;
 	}
 
 	/// <summary>
@@ -379,7 +381,7 @@ public:
 	/// 要素数を取得
 	/// </summary>
 	/// <returns>要素数</returns>
-	unsigned int GetCount(void) { return count; }
+	const unsigned int GetCount(void) const { return count; }
 };
 
 
