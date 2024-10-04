@@ -41,8 +41,8 @@ private:
 		/*--- メンバー変数 ---*/
 
 		T *pValue = nullptr;
-		Node *pNext = nullptr;	// 次のノード
-		Node *pPrev = nullptr;	// 前のノード
+		Node *pNext = this;		// 次のノード
+		Node *pPrev = this;		// 前のノード
 
 
 
@@ -67,7 +67,7 @@ public:
 		/*--- メンバー変数 ---*/
 
 		Node *pNode = nullptr;	// 現在のノード
-		List<int> *pParent = nullptr;
+		const List<T> *pParent = nullptr;
 
 
 
@@ -75,11 +75,19 @@ public:
 		/*--- コンストラクタ ---*/
 
 		ConstIterator() = default;
-		ConstIterator(const ConstIterator &iter) : pNode(iter.pNode), pParent(iter.pParent){ }
+		ConstIterator(const ConstIterator &iter) : pNode(iter.pNode), pParent(iter.pParent) { }
 
-	protected:
+	public:
 
-		ConstIterator(Node *pNode, List<int> *pParent) : pNode(pNode), pParent(pParent) { }
+		ConstIterator(Node *pNode, const List<T> *pParent) : pNode(pNode), pParent(pParent) { }
+
+		ConstIterator(ConstIterator &&iter) {
+			pNode = iter.pNode;
+			pParent = iter.pParent;
+
+			iter.pNode = nullptr;
+			iter.pParent = nullptr;
+		}
 
 
 
@@ -90,7 +98,7 @@ public:
 		/// ノードを取得
 		/// </summary>
 		/// <returns>ノードポインタ</returns>
-		Node *GetNode(void) { return pNode; }
+		Node *GetNode(void) const { return pNode; }
 
 
 
@@ -99,43 +107,53 @@ public:
 
 		ConstIterator operator++() {
 			assert(pNode);
-			assert(pNode->pNext);
-			return Iterator(ConstIterator::pNode = ConstIterator::pNode->pNext, pParent);
+			assert(pNode != &pParent->dummy);
+
+			pNode = pNode->pNext;
+			return *this;
 		}
 
 		ConstIterator operator--() {
 			assert(pNode);
-			assert(pNode->pPrev);
-			return Iterator(ConstIterator::pNode = ConstIterator::pNode->pPrev, pParent);
+			assert(pNode->pPrev != &pParent->dummy);
+
+			pNode = pNode->pPrev;
+			return *this;
 		}
 
 		ConstIterator operator++(int) {
 			assert(pNode);
-			assert(pNode->pNext);
-			return Iterator(ConstIterator::pNode = ConstIterator::pNode->pNext, pParent);
+			assert(pNode != &pParent->dummy);
+
+			pNode = pNode->pNext;
+			return ConstIterator(pNode->pPrev, pParent);
 		}
 
 		ConstIterator operator--(int) {
 			assert(pNode);
-			assert(pNode->pPrev);
-			return Iterator(ConstIterator::pNode = ConstIterator::pNode->pPrev, pParent);
+			assert(pNode->pPrev != &pParent->dummy);
+
+			pNode = pNode->pPrev;
+			return ConstIterator(pNode->pNext, pParent);
 		}
 
-		T const &operator* () {
+		T const &operator* () const {
 			assert(pNode);
 			return *pNode->pValue;
 		}
 
 		ConstIterator operator=(ConstIterator iter) {
+			if (pParent != iter.pParent) return *this;
+
 			pNode = iter.pNode;
 			return *this;
 		}
 
-		bool operator==(ConstIterator &iter) {
+		bool operator==(ConstIterator &iter) const {
 			return pNode == iter.pNode;
 		}
 
-		bool operator!=(ConstIterator &iter) {
+		bool operator!=(ConstIterator &iter) const {
 			return pNode != iter.pNode;
 		}
 	};
@@ -155,7 +173,7 @@ public:
 
 	protected:
 
-		Iterator(Node *pNode, List<int>* pParent) : ConstIterator(pNode, pParent) { }
+		Iterator(Node *pNode, List<T> *pParent) : ConstIterator(pNode, pParent) { }
 
 
 
@@ -174,18 +192,8 @@ public:
 private:
 	/*--- メンバー変数 ---*/
 
-	Node *pHead = nullptr;	// 先頭ノード
-	Node tail;				// 末尾ノード
+	Node dummy;				// ダミーノード
 	unsigned int count = 0;	// 要素数
-
-
-
-public:
-	/*--- コンストラクタ ---*/
-
-	List() {
-		pHead = &tail;
-	}
 
 
 
@@ -235,13 +243,19 @@ public:
 	/// false:削除失敗
 	/// </returns>
 	bool Remove(ConstIterator iter) {
+		// nullチェック
+		if (iter.GetNode() == nullptr) return false;
+		// ダミーチェック
+		if (iter.GetNode() == &dummy) return false;
+		// 無関係のリスト
+		if (iter.pParent != this) return false;
+
+
+
 		Node *pNode = iter.GetNode();
 
-		if (pNode == &tail || pNode == nullptr) {
-			return false;
-		}
 		// 削除処理
-		else if (pNode) {
+		if (pNode) {
 			Leave(pNode);
 			delete pNode->pValue;
 			delete pNode;
@@ -257,19 +271,19 @@ public:
 	void Clear(void) {
 		if (count == 0) return;
 
-		Node *pNode;
+		Node *pNode = dummy.pNext;
+		Node *pTmp = nullptr;
 
 		// ノードを全て削除
-		while (pHead != &tail) {
-			pNode = pHead;
-			pHead = pHead->pNext;
+		while (pNode != &dummy) {
+			pTmp = pNode;
+			pNode = pNode->pNext;
 
-			delete pNode->pValue;
-			delete pNode;
+			delete pTmp->pValue;
+			delete pTmp;
 		}
 
 		// リセット
-		pHead = &tail;
 		count = 0;
 	}
 
@@ -278,7 +292,7 @@ public:
 	/// </summary>
 	/// <returns>先頭のイテレータ</returns>
 	Iterator begin(void) {
-		return Iterator(pHead, this);
+		return Iterator(dummy.pNext, this);
 	}
 
 	/// <summary>
@@ -286,23 +300,41 @@ public:
 	/// </summary>
 	/// <returns>末尾のイテレータ</returns>
 	Iterator end(void) {
-		return Iterator(&tail, this);
+		return Iterator(&dummy, this);
 	}
 
 	/// <summary>
 	/// 先頭のコンストイテレータを取得
 	/// </summary>
 	/// <returns>先頭のコンストイテレータ</returns>
-	ConstIterator ConstBegin(void) {
-		return ConstIterator(pHead, this);
+	ConstIterator cbegin(void) const {
+		return ConstIterator(dummy.pNext, this);
 	}
 
 	/// <summary>
 	/// 末尾のコンストイテレータを取得
 	/// </summary>
 	/// <returns>末尾のコンストイテレータ</returns>
-	ConstIterator ConstEnd(void) {
-		return ConstIterator(&tail, this);
+	ConstIterator cend(void) const {
+		return ConstIterator(const_cast<Node*>(&dummy), this);
+	}
+
+	/// <summary>
+	/// 先頭の値を取得
+	/// </summary>
+	/// <returns>先頭の値</returns>
+	T &front(void) {
+		assert(dummy.pNext->pValue);
+		return *dummy.pPrev->pValue;
+	}
+
+	/// <summary>
+	/// 末尾の値を取得
+	/// </summary>
+	/// <returns>末尾の値</returns>
+	T &back(void) {
+		assert(dummy.pPrev->pValue);
+		return *dummy.pPrev->pValue;
 	}
 
 private:
@@ -320,9 +352,6 @@ private:
 		pThis->pPrev = pOther;
 		pOther->pNext = pThis;
 		if (pOther->pPrev) pOther->pPrev->pNext = pOther;
-
-		// 先頭ポインタの更新
-		if (pThis == pHead) pHead = pOther;
 	}
 	
 	/// <summary>
@@ -339,10 +368,6 @@ private:
 	/// </summary>
 	/// <param name="pThis">接続を切るノードポインタ</param>
 	void Leave(Node *pThis) {
-		// 先頭ポインタの更新
-		if (pThis == pHead) pHead = pHead->pNext;
-
-
 		// 切り離す処理
 		if (pThis->pNext) pThis->pNext->pPrev = pThis->pPrev;
 		if (pThis->pPrev) pThis->pPrev->pNext = pThis->pNext;
