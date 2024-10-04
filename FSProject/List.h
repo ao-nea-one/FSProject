@@ -14,18 +14,6 @@
 
 
 
-#define print {\
-Iterator e = this->end();\
-for (Iterator j = this->begin(); j != e; j++) {\
-	if (j == tmpStart || j == tmpEnd) std::cout << "[";\
-	std::cout << *j;\
-	if (j == tmpStart || j == tmpEnd) std::cout << "]";\
-}\
-std::cout << std::endl;\
-}\
-
-
-
 /// <summary>
 /// リストクラス
 /// </summary>
