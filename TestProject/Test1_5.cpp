@@ -324,7 +324,7 @@ namespace No01_05_StackAndQueue {
 
 				// 要素をポップ
 				EXPECT_EQ(queue.Pop(&tmp), true);
-				EXPECT_EQ(tmp, 1);
+				EXPECT_EQ(tmp, 0);
 
 				// 要素数をチェック
 				EXPECT_EQ(queue.GetCount(), 1);
@@ -417,7 +417,7 @@ namespace No01_05_StackAndQueue {
 
 				// 要素をポップ
 				EXPECT_TRUE(queue.Pop(&tmp));
-				EXPECT_EQ(tmp, 2);
+				EXPECT_EQ(tmp, 0);
 			}
 
 			/// <summary>
