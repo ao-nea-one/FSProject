@@ -262,6 +262,7 @@ void List<T>::Clear(void) {
 
 	// ƒŠƒZƒbƒg
 	count = 0;
+	dummy.pNext = dummy.pPrev = &dummy;
 }
 
 
