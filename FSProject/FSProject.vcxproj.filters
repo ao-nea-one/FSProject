@@ -36,4 +36,9 @@
       <Filter>課題\01</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="List.inl">
+      <Filter>ヘッダー ファイル</Filter>
+    </None>
+  </ItemGroup>
 </Project>

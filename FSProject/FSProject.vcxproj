@@ -134,6 +134,9 @@
     <ClInclude Include="List.h" />
     <ClInclude Include="ScoreManager.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="List.inl" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
