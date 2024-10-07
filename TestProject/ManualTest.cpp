@@ -11,7 +11,7 @@
 /// const‚Ìƒƒ\ƒbƒh‚Å‚ ‚é‚©
 /// </summary>
 TEST(GetDataNum, ID08_Const) {
-	const List<int> list;
+	const List<int> list = List<int>();
 
 	list.GetCount();
 }
