@@ -71,8 +71,7 @@ T const &List<T>::ConstIterator::operator* () const {
 
 template<class T>
 typename List<T>::ConstIterator List<T>::ConstIterator::operator=(const List<T>::ConstIterator &iter) {
-	if (pParent != iter.pParent) return *this;
-
+	pParent = iter.pParent;
 	pNode = iter.pNode;
 	return *this;
 }
@@ -104,34 +103,34 @@ bool List<T>::ConstIterator::operator!=(List<T>::ConstIterator &iter) const {
 
 template<class T>
 typename List<T>::Iterator &List<T>::Iterator::operator++() {
-	assert(ConstIterator::pNode);
-	assert(ConstIterator::pNode != &ConstIterator::pParent->dummy);
+	++(*((ConstIterator *)this));
 
-	return ConstIterator::pNode->value;
+	return *this;
 }
 
 template<class T>
-typename List<T>::Iterator &List<T>::Iterator::operator++() {
-	assert(ConstIterator::pNode);
-	assert(ConstIterator::pNode != &ConstIterator::pParent->dummy);
+typename List<T>::Iterator &List<T>::Iterator::operator--() {
+	--(*((ConstIterator *)this));
 
-	return ConstIterator::pNode->value;
-}
-
-template<class T>
-typename List<T>::Iterator List<T>::Iterator::operator++(int) {
-	assert(ConstIterator::pNode);
-	assert(ConstIterator::pNode != &ConstIterator::pParent->dummy);
-
-	return ConstIterator::pNode->value;
+	return *this;
 }
 
 template<class T>
 typename List<T>::Iterator List<T>::Iterator::operator++(int) {
-	assert(ConstIterator::pNode);
-	assert(ConstIterator::pNode != &ConstIterator::pParent->dummy);
+	Iterator old = *this;
 
-	return ConstIterator::pNode->value;
+	(*((ConstIterator *)this))++;
+
+	return old;
+}
+
+template<class T>
+typename List<T>::Iterator List<T>::Iterator::operator--(int) {
+	Iterator old = *this;
+
+	(*((ConstIterator *)this))--;
+
+	return old;
 }
 
 template<class T>
@@ -140,6 +139,16 @@ T &List<T>::Iterator::operator*() {
 	assert(ConstIterator::pNode != &ConstIterator::pParent->dummy);
 
 	return ConstIterator::pNode->value;
+}
+
+template<class T>
+bool List<T>::Iterator::operator==(List<T>::Iterator &iter) {
+	return *((ConstIterator *)(this)) == *((ConstIterator *)(&iter));
+}
+
+template<class T>
+bool List<T>::Iterator::operator!=(List<T>::Iterator &iter) {
+	return *((ConstIterator *)(this)) != *((ConstIterator *)(&iter));
 }
 
 

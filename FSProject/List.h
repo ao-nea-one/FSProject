@@ -63,6 +63,7 @@ public:
 		/*--- コンストラクタ ---*/
 
 		ConstIterator() = default;
+
 		ConstIterator(const ConstIterator &iter) : pNode(iter.pNode), pParent(iter.pParent) { }
 
 	public:
@@ -118,6 +119,7 @@ public:
 		/*--- コンストラクタ ---*/
 
 		Iterator() = default;
+
 		Iterator(const Iterator &iter) : ConstIterator(iter.pNode, iter.pParent) { }
 
 	protected:
@@ -129,8 +131,6 @@ public:
 	public:
 		/*--- オペレータ ---*/
 
-		T &operator*();
-
 		Iterator &operator++();
 
 		Iterator &operator--();
@@ -138,6 +138,12 @@ public:
 		Iterator operator++(int);
 
 		Iterator operator--(int);
+
+		T &operator*();
+
+		bool operator==(Iterator &iter);
+
+		bool operator!=(Iterator &iter);
 	};
 
 
