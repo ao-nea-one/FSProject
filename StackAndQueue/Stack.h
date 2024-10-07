@@ -43,17 +43,40 @@ public:
 	/// <summary>
 	/// 末尾から要素を取り出す
 	/// </summary>
+	/// <param name="pDst">末尾の値を返すポインタ</param>
+	/// <returns>
+	/// true:ポップ成功
+	/// false:ポップ失敗
+	/// </returns>
+	bool Pop(T *pDst) {
+		// 要素が何もないなら
+		if (list.GetCount() == 0) return false;
+
+		// 末尾の値を取得
+		if (pDst) *pDst = list.back();
+
+		// 末尾のノードを削除
+		return list.Remove(--list.end());
+	}
+
+	/// <summary>
+	/// 先頭の値を取得
+	/// </summary>
+	/// <returns>
+	/// 先頭の値
+	/// </returns>
+	T &front(void) {
+		return list.front();
+	}
+
+	/// <summary>
+	/// 末尾の値を取得
+	/// </summary>
 	/// <returns>
 	/// 末尾の値
 	/// </returns>
-	T Pop(void) {
-		// 末尾の値を取得
-		T result = list.back();
-
-		// 末尾のノードを削除
-		list.Remove(--list.end());
-
-		return result;
+	T &back(void) {
+		return list.back();
 	}
 
 
