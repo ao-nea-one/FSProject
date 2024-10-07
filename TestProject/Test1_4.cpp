@@ -2,9 +2,12 @@
 #include <gtest/gtest.h>
 #include <functional>
 
+/*--- include ---*/
 #include "../FSProject/List.h"
+#include "ManualTest1_4.h"
 
-#define NO01_04_Test
+
+
 #ifdef NO01_04_Test
 
 namespace No01_04_QuickSort {
@@ -189,42 +192,7 @@ namespace No01_04_QuickSort {
 		// キーの指定なしでソート
 		list.Sort(list.begin(), list.end(), nullptr);
 	}
-
-#ifdef COMPILE_ERROR
-
-	/// <summary>
-	/// テスト項目　　：型などが不適切なキー指定が引数で渡された時の挙動
-	/// 意図する結果　：コンパイルエラーとなる
-	/// 補足　　　　　：コンパイルエラーをチェック。自動テスト化しない
-	/// </summary>
-	TEST(QuickSortTest, ID07_WrongKey) {
-		List<int> list;
-
-		list.Insert(list.end(), 5);
-		list.Insert(list.end(), 1);
-		list.Insert(list.end(), 3);
-
-		// キーの指定なしでソート
-		list.Sort(list.begin(), list.end(), [](float &a, bool &b) { return a < b; });
-	}
-
-	/// <summary>
-	/// テスト項目　　：非constのメソッドであるか
-	/// 意図する結果　：コンパイルエラーとなる
-	/// 補足　　　　　：constのリストから呼び出して、コンパイルエラーとなるかをチェック。自動テスト化しなくてよい。
-	/// </summary>
-	TEST(QuickSortTest, ID07_WrongKey) {
-		const List<int> list;
-
-		list.Insert(list.end(), 5);
-		list.Insert(list.end(), 1);
-		list.Insert(list.end(), 3);
-
-		// キーの指定なしでソート
-		list.Sort(list.begin(), list.end(), [](int &a, int &b) { return a < b; });
-	}
-
-#endif
+	//*/
 }
 
 #endif

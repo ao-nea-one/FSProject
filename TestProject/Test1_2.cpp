@@ -1,11 +1,16 @@
 #include "pch.h"
 #include <gtest/gtest.h>
+#include <functional>
 
+/*--- include ---*/
 #include "../FSProject/List.h"
+#include "ManualTest1_2.h"
+
+
 
 #ifdef NO01_02_Test
 
-namespace No01_02_List {
+namespace No01_2_List {
 
 	namespace GetDataNumTest {
 
@@ -35,7 +40,7 @@ namespace No01_02_List {
 		TEST(GetDataNum, ID02_InsertEndFailed) {
 
 			// 失敗しないためスキップ
-			
+
 			//List<int> list;
 			//// 末尾への挿入（失敗）
 			//EXPECT_DEATH(list.Insert(list.end(), 0), "Assertion failed:");
@@ -139,7 +144,7 @@ namespace No01_02_List {
 			// 先頭に挿入
 			EXPECT_EQ(list.Insert(list.begin(), 0), true);
 
-			 // 値をチェック
+			// 値をチェック
 			auto iter = list.begin();
 			EXPECT_EQ(*iter, 0);
 			iter++;
@@ -160,7 +165,7 @@ namespace No01_02_List {
 			// 末尾に挿入
 			EXPECT_EQ(list.Insert(list.end(), 2), true);
 
-			 // 値をチェック
+			// 値をチェック
 			auto iter = list.begin();
 			EXPECT_EQ(*iter, 0);
 			iter++;
@@ -181,7 +186,7 @@ namespace No01_02_List {
 			// 中間に挿入
 			EXPECT_EQ(list.Insert(++list.begin(), 1), true);
 
-			 // 値をチェック
+			// 値をチェック
 			auto iter = list.begin();
 			EXPECT_EQ(*iter, 0);
 			iter++;
@@ -218,7 +223,7 @@ namespace No01_02_List {
 			// 空のイテレータで挿入（失敗）
 			EXPECT_EQ(list.Insert(List<int>::Iterator(), 2), false);
 
-			 // ほかのリストの入れテータで挿入
+			// ほかのリストの入れテータで挿入
 			EXPECT_EQ(list.Insert(other.begin(), 2), false);
 		}
 	}
@@ -252,7 +257,7 @@ namespace No01_02_List {
 			// 先頭を削除
 			EXPECT_EQ(list.Remove(list.begin()), true);
 
-			 // 値をチェック
+			// 値をチェック
 			auto iter = list.begin();
 			EXPECT_EQ(*iter, 1);
 			iter++;
@@ -273,7 +278,7 @@ namespace No01_02_List {
 			// 末尾を削除
 			EXPECT_EQ(list.Remove(list.end()), false);
 
-			 // 値をチェック
+			// 値をチェック
 			auto iter = list.begin();
 			EXPECT_EQ(*iter, 0);
 			iter++;
@@ -296,7 +301,7 @@ namespace No01_02_List {
 			// 中間を削除
 			EXPECT_EQ(list.Remove(++list.begin()), true);
 
-			 // 値をチェック
+			// 値をチェック
 			auto iter = list.begin();
 			EXPECT_EQ(*iter, 0);
 			iter++;
@@ -316,7 +321,7 @@ namespace No01_02_List {
 			// コンストイテレータで削除
 			EXPECT_EQ(list.Remove(list.cbegin()), true);
 
-			 // 値をチェック
+			// 値をチェック
 			auto iter = list.begin();
 			EXPECT_EQ(*iter, 1);
 			iter++;
@@ -343,7 +348,7 @@ namespace No01_02_List {
 
 
 
-	namespace GetBeginIteratorTest{
+	namespace GetBeginIteratorTest {
 
 		/// <summary>
 		/// リストが空である場合に、呼び出した際の挙動
@@ -364,7 +369,7 @@ namespace No01_02_List {
 			// 要素1の場合で取得
 			list.Insert(list.end(), 0);
 
-			 // 値をチェック
+			// 値をチェック
 			EXPECT_EQ(*list.begin(), 0);
 		}
 
@@ -731,7 +736,7 @@ namespace No01_02_List {
 
 
 	namespace UserIncrementTest {
-		
+
 		/// <summary>
 		/// リストの参照がない状態で呼び出した際の挙動
 		/// </summary>
@@ -1035,7 +1040,7 @@ namespace No01_02_List {
 		}
 	}
 }
-
-
-
 #endif
+
+
+

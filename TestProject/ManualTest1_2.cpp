@@ -1,10 +1,13 @@
 #include "pch.h"
-#include "ManualTest.h"
+#include "ManualTest1_2.h"
 #include <gtest/gtest.h>
 
+/*--- include ---*/
 #include "../FSProject/List.h"
 
 
+
+#ifdef NO01_02_Test
 
 #ifdef ID08_NO_COMPILE_ERROR_CHECK
 /// <summary>
@@ -143,4 +146,6 @@ TEST(UserIterator, ID19_ConstIteratorToIterator) {
 	List<int>::Iterator iter;
 	iter = list.cbegin();
 }
+#endif
+
 #endif

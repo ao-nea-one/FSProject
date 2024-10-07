@@ -1,6 +1,13 @@
 #pragma once
 
 
+#define NO01_02_Test
+
+
+
+#ifdef NO01_02_Test
+
+
 // ƒRƒ“ƒpƒCƒ‹‚ª’Ê‚ê‚Î¬Œ÷
 #define ID08_NO_COMPILE_ERROR_CHECK
 #define ID34_NO_COMPILE_ERROR_CHECK
@@ -18,3 +25,5 @@
 //#define ID02_USER_COMPILE_ERROR_CHECK
 //#define ID17_USER_COMPILE_ERROR_CHECK
 //#define ID19_USER_COMPILE_ERROR_CHECK
+
+#endif
