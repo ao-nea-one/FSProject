@@ -409,7 +409,7 @@ typename List<T>::ConstIterator List<T>::cend(void) const {
 
 template<class T>
 T &List<T>::front(void) {
-	assert(dummy.pNext->value);
+	assert(dummy.pNext != &dummy);
 	return dummy.pPrev->value;
 }
 
@@ -419,6 +419,6 @@ T &List<T>::front(void) {
 
 template<class T>
 T &List<T>::back(void) {
-	assert(dummy.pPrev->value);
+	assert(dummy.pPrev != &dummy);
 	return dummy.pPrev->value;
 }
