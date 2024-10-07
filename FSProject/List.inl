@@ -103,6 +103,38 @@ bool List<T>::ConstIterator::operator!=(List<T>::ConstIterator &iter) const {
 /*--- オペーレタ ---*/
 
 template<class T>
+typename List<T>::Iterator &List<T>::Iterator::operator++() {
+	assert(ConstIterator::pNode);
+	assert(ConstIterator::pNode != &ConstIterator::pParent->dummy);
+
+	return ConstIterator::pNode->value;
+}
+
+template<class T>
+typename List<T>::Iterator &List<T>::Iterator::operator++() {
+	assert(ConstIterator::pNode);
+	assert(ConstIterator::pNode != &ConstIterator::pParent->dummy);
+
+	return ConstIterator::pNode->value;
+}
+
+template<class T>
+typename List<T>::Iterator List<T>::Iterator::operator++(int) {
+	assert(ConstIterator::pNode);
+	assert(ConstIterator::pNode != &ConstIterator::pParent->dummy);
+
+	return ConstIterator::pNode->value;
+}
+
+template<class T>
+typename List<T>::Iterator List<T>::Iterator::operator++(int) {
+	assert(ConstIterator::pNode);
+	assert(ConstIterator::pNode != &ConstIterator::pParent->dummy);
+
+	return ConstIterator::pNode->value;
+}
+
+template<class T>
 T &List<T>::Iterator::operator*() {
 	assert(ConstIterator::pNode);
 	assert(ConstIterator::pNode != &ConstIterator::pParent->dummy);
@@ -164,6 +196,40 @@ bool List<T>::Remove(List<T>::ConstIterator iter) {
 	}
 
 	return false;
+}
+
+
+
+
+
+template<class T>
+void List<T>::Sort(Iterator first, Iterator last, std::function<bool(T &, T &)> func) {
+	// nullチェック
+	if (func == nullptr) return;
+
+	if (first == last || first == --Iterator(last)) return;
+
+	Iterator pivot = first;
+	Iterator tmp;
+
+	// 先頭側と末尾側でデータを分割をする
+
+	for (auto i = ++Iterator(first); i != last; ++i) {
+		// もし基準値と比較した結果当てはまらなければ、先頭側に移動
+		if (func(*i, *pivot)) {
+			tmp = i--;
+
+			// 先頭へ移動
+			Leave(tmp);
+			Link(first, tmp);
+
+			// 先頭イテレータを更新
+			first = tmp;
+		}
+	}
+
+	if (first != pivot) Sort(first, pivot, func);
+	if (last != pivot) Sort(++Iterator(pivot), last, func);
 }
 
 

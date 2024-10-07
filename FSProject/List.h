@@ -130,6 +130,14 @@ public:
 		/*--- オペレータ ---*/
 
 		T &operator*();
+
+		Iterator &operator++();
+
+		Iterator &operator--();
+
+		Iterator operator++(int);
+
+		Iterator operator--(int);
 	};
 
 
@@ -179,6 +187,13 @@ public:
 	/// false:削除失敗
 	/// </returns>
 	bool Remove(ConstIterator iter);
+
+	/// <summary>
+	/// ソート
+	/// </summary>
+	/// <param name="func">ソート時の関数</param>
+	void Sort(Iterator first, Iterator last, std::function<bool(T &, T &)> func);
+
 
 	/// <summary>
 	/// 全て削除
