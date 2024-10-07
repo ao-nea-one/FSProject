@@ -2,13 +2,18 @@
 #include <gtest/gtest.h>
 #include <functional>
 
+/*--- include ---*/
 #include "../FSProject/List.h"
+#include "ManualTest1_2.h"
+
+
 
 #ifdef NO01_02_Test
 
-namespace No01_02_List {
+namespace No01_2_List {
 
 	namespace GetDataNumTest {
+
 		/// <summary>
 		/// リストが空である場合の戻り値
 		/// </summary>
@@ -35,7 +40,7 @@ namespace No01_02_List {
 		TEST(GetDataNum, ID02_InsertEndFailed) {
 
 			// 失敗しないためスキップ
-			
+
 			//List<int> list;
 			//// 末尾への挿入（失敗）
 			//EXPECT_DEATH(list.Insert(list.end(), 0), "Assertion failed:");
@@ -102,18 +107,6 @@ namespace No01_02_List {
 
 			EXPECT_EQ(list.GetCount(), 0);
 		}
-
-#ifdef COMPILE_ERROR
-
-		/// <summary>
-		/// constのメソッドであるか
-		/// </summary>
-		TEST(GetDataNum, ID08_Const) {
-			const List<int> list;
-
-			list.GetCount();
-		}
-#endif
 	}
 
 
@@ -151,7 +144,7 @@ namespace No01_02_List {
 			// 先頭に挿入
 			EXPECT_EQ(list.Insert(list.begin(), 0), true);
 
-			 // 値をチェック
+			// 値をチェック
 			auto iter = list.begin();
 			EXPECT_EQ(*iter, 0);
 			iter++;
@@ -172,7 +165,7 @@ namespace No01_02_List {
 			// 末尾に挿入
 			EXPECT_EQ(list.Insert(list.end(), 2), true);
 
-			 // 値をチェック
+			// 値をチェック
 			auto iter = list.begin();
 			EXPECT_EQ(*iter, 0);
 			iter++;
@@ -193,7 +186,7 @@ namespace No01_02_List {
 			// 中間に挿入
 			EXPECT_EQ(list.Insert(++list.begin(), 1), true);
 
-			 // 値をチェック
+			// 値をチェック
 			auto iter = list.begin();
 			EXPECT_EQ(*iter, 0);
 			iter++;
@@ -230,21 +223,9 @@ namespace No01_02_List {
 			// 空のイテレータで挿入（失敗）
 			EXPECT_EQ(list.Insert(List<int>::Iterator(), 2), false);
 
-			 // ほかのリストの入れテータで挿入
+			// ほかのリストの入れテータで挿入
 			EXPECT_EQ(list.Insert(other.begin(), 2), false);
 		}
-
-#ifdef COMPILE_ERROR
-
-		/// <summary>
-		/// 非constのメソッドであるか
-		/// </summary>
-		TEST(InsertData, ID15_NoConst) {
-			const List<int> list;
-
-			list.Insert(list.begin(), 0);
-		}
-#endif
 	}
 
 
@@ -276,7 +257,7 @@ namespace No01_02_List {
 			// 先頭を削除
 			EXPECT_EQ(list.Remove(list.begin()), true);
 
-			 // 値をチェック
+			// 値をチェック
 			auto iter = list.begin();
 			EXPECT_EQ(*iter, 1);
 			iter++;
@@ -297,7 +278,7 @@ namespace No01_02_List {
 			// 末尾を削除
 			EXPECT_EQ(list.Remove(list.end()), false);
 
-			 // 値をチェック
+			// 値をチェック
 			auto iter = list.begin();
 			EXPECT_EQ(*iter, 0);
 			iter++;
@@ -320,7 +301,7 @@ namespace No01_02_List {
 			// 中間を削除
 			EXPECT_EQ(list.Remove(++list.begin()), true);
 
-			 // 値をチェック
+			// 値をチェック
 			auto iter = list.begin();
 			EXPECT_EQ(*iter, 0);
 			iter++;
@@ -340,7 +321,7 @@ namespace No01_02_List {
 			// コンストイテレータで削除
 			EXPECT_EQ(list.Remove(list.cbegin()), true);
 
-			 // 値をチェック
+			// 値をチェック
 			auto iter = list.begin();
 			EXPECT_EQ(*iter, 1);
 			iter++;
@@ -361,25 +342,13 @@ namespace No01_02_List {
 			// 不正なイテレータで削除
 			EXPECT_EQ(list.Remove(List<int>::Iterator()), false);
 		}
-
-#ifdef COMPILE_ERROR
-
-		/// <summary>
-		/// 非constのメソッドであるか
-		/// </summary>
-		TEST(RemoveData, ID22_NoConst) {
-			const List<int> list;
-
-			list.Remove(list.begin());
-		}
-#endif
 	}
 
 
 
 
 
-	namespace GetBeginIteratorTest{
+	namespace GetBeginIteratorTest {
 
 		/// <summary>
 		/// リストが空である場合に、呼び出した際の挙動
@@ -400,7 +369,7 @@ namespace No01_02_List {
 			// 要素1の場合で取得
 			list.Insert(list.end(), 0);
 
-			 // 値をチェック
+			// 値をチェック
 			EXPECT_EQ(*list.begin(), 0);
 		}
 
@@ -455,18 +424,6 @@ namespace No01_02_List {
 			list.Remove(list.begin());
 			EXPECT_EQ((list.begin() == list.end()), true);
 		}
-
-#ifdef COMPILE_ERROR
-
-		/// <summary>
-		/// constのリストから、ConstIteratorでないIteratorの取得が行えないかをチェック
-		/// </summary>
-		TEST(GetBeginIterator, ID28_GetConstIterator) {
-			const List<int> list;
-
-			auto iter = list.begin();
-		}
-#endif
 	}
 
 
@@ -549,18 +506,6 @@ namespace No01_02_List {
 			list.Remove(list.cbegin());
 			EXPECT_EQ((list.cbegin() == list.cend()), true);
 		}
-
-#ifdef COMPILE_NO_ERROR
-
-		/// <summary>
-		/// constのメソッドであるか
-		/// </summary>
-		TEST(GetConstBeginIterator, ID34_GetConstIterator) {
-			const List<int> list;
-
-			auto iter = list.cbegin();
-		}
-#endif
 	}
 
 
@@ -643,18 +588,6 @@ namespace No01_02_List {
 			list.Remove(list.begin());
 			EXPECT_EQ((list.end() == list.begin()), true);
 		}
-
-#ifdef COMPILE_ERROR
-
-		/// <summary>
-		/// constのリストから、ConstIteratorでないIteratorの取得が行えないかをチェック
-		/// </summary>
-		TEST(GetEndIterator, ID40_GetConstIterator) {
-			const List<int> list;
-
-			auto iter = list.end();
-		}
-#endif
 	}
 
 
@@ -739,18 +672,6 @@ namespace No01_02_List {
 			list.Remove(list.cbegin());
 			EXPECT_EQ((list.cbegin() == list.cend()), true);
 		}
-
-#ifdef COMPILE_NO_ERROR
-
-		/// <summary>
-		/// constのメソッドであるか
-		/// </summary>
-		TEST(GetConstBeginIterator, ID46_GetConstIterator) {
-			const List<int> list;
-
-			auto iter = list.cend();
-		}
-#endif
 	}
 
 
@@ -784,26 +705,6 @@ namespace No01_02_List {
 			EXPECT_EQ(*list.begin(), 1);
 		}
 
-#ifdef COMPILE_ERROR_CHECK
-
-		/// <summary>
-		/// ConstIteratorから取得した要素に対して、値の代入が行えないかをチェック
-		/// </summary>
-		/// <param name=""></param>
-		/// <param name=""></param>
-		TEST(UserGetIterator, ID02_SetConstIteratorValue) {
-			List<int> list;
-			list.Insert(list.begin(), 0);
-
-			// イテレータから代入
-			*list.ConstBegin() = 1;
-
-			// 値をチェック
-			EXPECT_EQ(*list.begin(), 1);
-		}
-
-#endif
-
 		/// <summary>
 		/// リストが空の際の、先頭イテレータに対して呼び出した際の挙動
 		/// </summary>
@@ -835,7 +736,7 @@ namespace No01_02_List {
 
 
 	namespace UserIncrementTest {
-		
+
 		/// <summary>
 		/// リストの参照がない状態で呼び出した際の挙動
 		/// </summary>
@@ -1041,18 +942,6 @@ namespace No01_02_List {
 
 	namespace UserIteratorTest {
 
-#ifdef COMPILE_ERROR
-
-		/// <summary>
-		/// ConstIteratorから、Iteratorのコピーが作成されないかをチェック
-		/// </summary>
-		TEST(UserIterator, ID17_ConstIteratorToIterator) {
-			List<int> list;
-
-			List<int>::Iterator iter = list.cbegin();
-		}
-#endif
-
 		/// <summary>
 		/// コピーコンストラクト後の値がコピー元と等しいことをチェック
 		/// </summary>
@@ -1065,18 +954,6 @@ namespace No01_02_List {
 
 			EXPECT_EQ((iter == list.end()), true);
 		}
-
-#ifdef COMPILE_ERROR
-
-		/// <summary>
-		/// IteratorにConstIteratorを代入できない事をチェック
-		/// </summary>
-		TEST(UserIterator, ID19_ConstIteratorToIterator) {
-			List<int> list;
-			List<int>::Iterator iter;
-			iter = list.cbegin();
-		}
-#endif
 
 		/// <summary>
 		/// 代入後の値がコピー元と等しいことをチェック
@@ -1163,7 +1040,7 @@ namespace No01_02_List {
 		}
 	}
 }
-
-
-
 #endif
+
+
+

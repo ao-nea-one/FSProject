@@ -1,4 +1,4 @@
-ï»¿/*--------------------------------------------------
+/*--------------------------------------------------
 	Name : List
 	Date : 2024/10/01
 --------------------------------------------------*/
@@ -11,34 +11,33 @@
 #include <cassert>
 #include <functional>
 #include <iostream>
-#include <algorithm>
 
 
 
 /// <summary>
-/// ãƒªã‚¹ãƒˆã‚¯ãƒ©ã‚¹
+/// ƒŠƒXƒgƒNƒ‰ƒX
 /// </summary>
 template<class T>
 class List {
 private:
-	/*--- ã‚¤ãƒ³ãƒŠãƒ¼ã‚¯ãƒ©ã‚¹ ---*/
+	/*--- ƒCƒ“ƒi[ƒNƒ‰ƒX ---*/
 
 	/// <summary>
-	/// ãƒãƒ¼ãƒ‰ã‚¯ãƒ©ã‚¹:ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹
+	/// ƒm[ƒhƒNƒ‰ƒX:ƒCƒ“ƒ^[ƒtƒF[ƒX
 	/// </summary>
 	struct Node {
-		/*--- ãƒ¡ãƒ³ãƒãƒ¼å¤‰æ•° ---*/
+		/*--- ƒƒ“ƒo[•Ï” ---*/
 
-		T *pValue = nullptr;
-		Node *pNext = this;		// æ¬¡ã®ãƒãƒ¼ãƒ‰
-		Node *pPrev = this;		// å‰ã®ãƒãƒ¼ãƒ‰
+		T value = T();
+		Node *pNext = this;		// Ÿ‚Ìƒm[ƒh
+		Node *pPrev = this;		// ‘O‚Ìƒm[ƒh
 
 
 
-		/*--- ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ ---*/
+		/*--- ƒRƒ“ƒXƒgƒ‰ƒNƒ^ ---*/
 
 		Node() = default;
-		Node(T* pValue) : pValue(pValue) { }
+		Node(const T &value) : value(value) { }
 	};
 
 
@@ -46,130 +45,78 @@ private:
 public:
 
 	/// <summary>
-	/// ã‚³ãƒ³ã‚¹ãƒˆã‚¤ãƒ†ãƒ¬ãƒ¼ã‚¿ã‚¯ãƒ©ã‚¹
+	/// ƒRƒ“ƒXƒgƒCƒeƒŒ[ƒ^ƒNƒ‰ƒX
 	/// </summary>
 	class ConstIterator {
 
 		friend List;
 
 	protected:
-		/*--- ãƒ¡ãƒ³ãƒãƒ¼å¤‰æ•° ---*/
+		/*--- ƒƒ“ƒo[•Ï” ---*/
 
-		Node *pNode = nullptr;	// ç¾åœ¨ã®ãƒãƒ¼ãƒ‰
-		List<T> *pParent = nullptr;
+		Node *pNode = nullptr;	// Œ»İ‚Ìƒm[ƒh
+		const List<T> *pParent = nullptr;
 
 
 
 	public:
-		/*--- ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ ---*/
+		/*--- ƒRƒ“ƒXƒgƒ‰ƒNƒ^ ---*/
 
 		ConstIterator() = default;
+
 		ConstIterator(const ConstIterator &iter) : pNode(iter.pNode), pParent(iter.pParent) { }
 
 	public:
 
-		ConstIterator(Node *pNode, List<T> *pParent) : pNode(pNode), pParent(pParent) { }
+		ConstIterator(Node *pNode, const List<T> *pParent) : pNode(pNode), pParent(pParent) { }
 
-		ConstIterator(ConstIterator &&iter) {
-			pNode = iter.pNode;
-			pParent = iter.pParent;
-
-			iter.pNode = nullptr;
-			iter.pParent = nullptr;
-		}
+		ConstIterator(ConstIterator &&iter) noexcept;
 
 
 
 	protected:
-		/*--- ãƒ¡ãƒ³ãƒãƒ¼é–¢æ•° ---*/
+		/*--- ƒAƒNƒZƒTŠÖ” ---*/
 
 		/// <summary>
-		/// ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆ
+		/// ƒm[ƒh‚ğæ“¾
 		/// </summary>
-		void Increment(void) {
-			assert(pNode);
-			assert(pNode != &pParent->dummy);
-
-			pNode = pNode->pNext;
-		}
-
-		/// <summary>
-		/// ãƒ‡ã‚¯ãƒªãƒ¡ãƒ³ãƒˆ
-		/// </summary>
-		void Decrement(void) {
-			assert(pNode);
-			assert(pNode->pPrev != &pParent->dummy);
-
-			pNode = pNode->pPrev;
-		}
-
-
-
-	protected:
-		/*--- ã‚¢ã‚¯ã‚»ã‚µé–¢æ•° ---*/
-
-		/// <summary>
-		/// ãƒãƒ¼ãƒ‰ã‚’å–å¾—
-		/// </summary>
-		/// <returns>ãƒãƒ¼ãƒ‰ãƒã‚¤ãƒ³ã‚¿</returns>
-		Node *GetNode(void) const { return pNode; }
+		/// <returns>ƒm[ƒhƒ|ƒCƒ“ƒ^</returns>
+		Node *GetNode(void) { return pNode; }
 
 
 
 	public:
-		/*--- ã‚ªãƒšãƒ¬ãƒ¼ã‚¿ ---*/
+		/*--- ƒIƒyƒŒ[ƒ^ ---*/
 
-		ConstIterator operator++() {
-			Increment();
-			return *this;
-		}
+		ConstIterator &operator++();
 
-		ConstIterator operator--() {
-			Decrement();
-			return *this;
-		}
+		ConstIterator &operator--();
 
-		ConstIterator operator++(int) {
-			Increment();
-			return ConstIterator(pNode->pPrev, pParent);
-		}
+		ConstIterator operator++(int);
 
-		ConstIterator operator--(int) {
-			Decrement();
-			return ConstIterator(pNode->pNext, pParent);
-		}
+		ConstIterator operator--(int);
 
-		T const &operator* () const {
-			assert(pNode);
-			return *pNode->pValue;
-		}
+		T const &operator* () const;
 
-		ConstIterator operator=(ConstIterator iter) {
-			pParent = iter.pParent;
-			pNode = iter.pNode;
-			return *this;
-		}
+		ConstIterator operator=(const ConstIterator &iter);
 
-		bool operator==(ConstIterator &iter) const {
-			return pNode == iter.pNode;
-		}
+		bool operator==(ConstIterator &iter) const;
 
-		bool operator!=(ConstIterator &iter) const {
-			return pNode != iter.pNode;
-		}
+		bool operator!=(ConstIterator &iter) const;
 	};
 
 	/// <summary>
-	/// ã‚¤ãƒ†ãƒ¬ãƒ¼ã‚¿ã‚¯ãƒ©ã‚¹
+	/// ƒCƒeƒŒ[ƒ^ƒNƒ‰ƒX
 	/// </summary>
 	class Iterator : public ConstIterator {
 
 		friend List;
 
 	public:
-		/*--- ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ ---*/
+		/*--- ƒRƒ“ƒXƒgƒ‰ƒNƒ^ ---*/
 
 		Iterator() = default;
+
 		Iterator(const Iterator &iter) : ConstIterator(iter.pNode, iter.pParent) { }
 
 	protected:
@@ -179,282 +126,172 @@ public:
 
 
 	public:
-		/*--- ã‚ªãƒšãƒ¬ãƒ¼ã‚¿ ---*/
+		/*--- ƒIƒyƒŒ[ƒ^ ---*/
 
-		Iterator operator++() {
-			ConstIterator::Increment();
-			return *this;
-		}
+		Iterator &operator++();
 
-		Iterator operator--() {
-			ConstIterator::Decrement();
-			return *this;
-		}
+		Iterator &operator--();
 
-		Iterator operator++(int) {
-			ConstIterator::Increment();
-			return Iterator(ConstIterator::pNode->pPrev, ConstIterator::pParent);
-		}
+		Iterator operator++(int);
 
-		Iterator operator--(int) {
-			ConstIterator::Decrement();
-			return Iterator(ConstIterator::pNode->pNext, ConstIterator::pParent);
-		}
+		Iterator operator--(int);
 
-		T &operator*() {
-			assert(ConstIterator::pNode);
-			assert(ConstIterator::pNode->pValue);
-			return *ConstIterator::pNode->pValue;
-		}
+		T &operator*();
 
-		bool operator==(Iterator iter) const {
-			return ConstIterator::pNode == iter.pNode;
-		}
+		bool operator==(Iterator &iter);
 
-		bool operator!=(Iterator iter) const {
-			return ConstIterator::pNode != iter.pNode;
-		}
+		bool operator!=(Iterator &iter);
 	};
 
 
 
 private:
-	/*--- ãƒ¡ãƒ³ãƒãƒ¼å¤‰æ•° ---*/
+	/*--- ƒƒ“ƒo[•Ï” ---*/
 
-	Node dummy;				// ãƒ€ãƒŸãƒ¼ãƒãƒ¼ãƒ‰
-	unsigned int count = 0;	// è¦ç´ æ•°
+	Node dummy;				// ƒ_ƒ~[ƒm[ƒh
+	unsigned int count = 0;	// —v‘f”
 
 
 
 public:
-	/*--- ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ ---*/
+	/*--- ƒRƒ“ƒXƒgƒ‰ƒNƒ^ ---*/
+
+	List() = default;
+	
+
+
+public:
+	/*--- ƒfƒXƒgƒ‰ƒNƒ^ ---*/
 
 	~List() { Clear(); }
 
 
 
 public:
-	/*--- ãƒ¡ãƒ³ãƒãƒ¼é–¢æ•° ---*/
+	/*--- ƒƒ“ƒo[ŠÖ” ---*/
 
 	/// <summary>
-	/// æŒ¿å…¥
+	/// ‘}“ü
 	/// </summary>
-	/// <param name="iter">æŒ¿å…¥å…ˆã®ã‚¤ãƒ†ãƒ¬ãƒ¼ã‚¿</param>
-	/// <param name="value">æŒ¿å…¥ã™ã‚‹å€¤</param>
+	/// <param name="iter">‘}“üæ‚ÌƒCƒeƒŒ[ƒ^</param>
+	/// <param name="value">‘}“ü‚·‚é’l</param>
 	/// <returns>
-	/// true:æŒ¿å…¥æˆåŠŸ
-	/// false:æŒ¿å…¥å¤±æ•—
+	/// true:‘}“ü¬Œ÷
+	/// false:‘}“ü¸”s
 	/// </returns>
-	bool Insert(ConstIterator iter, const T&value) {
-		// nullãƒã‚§ãƒƒã‚¯
-		if (iter.GetNode() == nullptr) return false;
-		// ç„¡é–¢ä¿‚ã®ãƒªã‚¹ãƒˆ
-		if (iter.pParent != this) return false;
-
-		Node *pNode = new Node(new T(value));
-
-
-		// è¿½åŠ å‡¦ç†
-		Link(iter.GetNode(), pNode);
-
-
-		count++;
-
-		return true;
-	}
+	bool Insert(ConstIterator iter, const T &value);
 
 	/// <summary>
-	/// å‰Šé™¤ã™ã‚‹
+	/// íœ‚·‚é
 	/// </summary>
-	/// <param name="iter">å‰Šé™¤ã™ã‚‹ã‚¤ãƒ†ãƒ¬ãƒ¼ã‚¿</param>
+	/// <param name="iter">íœ‚·‚éƒCƒeƒŒ[ƒ^</param>
 	/// <returns>
-	/// true:å‰Šé™¤æˆåŠŸ
-	/// false:å‰Šé™¤å¤±æ•—
+	/// true:íœ¬Œ÷
+	/// false:íœ¸”s
 	/// </returns>
-	bool Remove(ConstIterator iter) {
-		// nullãƒã‚§ãƒƒã‚¯
-		if (iter.GetNode() == nullptr) return false;
-		// ãƒ€ãƒŸãƒ¼ãƒã‚§ãƒƒã‚¯
-		if (iter.GetNode() == &dummy) return false;
-		// ç„¡é–¢ä¿‚ã®ãƒªã‚¹ãƒˆ
-		if (iter.pParent != this) return false;
-
-
-
-		Node *pNode = iter.GetNode();
-
-		// å‰Šé™¤å‡¦ç†
-		if (pNode) {
-			Leave(pNode);
-			delete pNode->pValue;
-			delete pNode;
-
-			count--;
-			return true;
-		}
-	}
+	bool Remove(ConstIterator iter);
 
 	/// <summary>
-	/// å…¨ã¦å‰Šé™¤
+	/// ƒ\[ƒg
 	/// </summary>
-	void Clear(void) {
-		if (count == 0) return;
+	/// <param name="func">ƒ\[ƒg‚ÌŠÖ”</param>
+	void Sort(Iterator first, Iterator last, std::function<bool(T &, T &)> func);
 
-		Node *pNode = dummy.pNext;
-		Node *pTmp = nullptr;
-
-		// ãƒãƒ¼ãƒ‰ã‚’å…¨ã¦å‰Šé™¤
-		while (pNode != &dummy) {
-			pTmp = pNode;
-			pNode = pNode->pNext;
-
-			delete pTmp->pValue;
-			delete pTmp;
-		}
-
-		// ãƒªã‚»ãƒƒãƒˆ
-		count = 0;
-	}
 
 	/// <summary>
-	/// ã‚½ãƒ¼ãƒˆ
+	/// ‘S‚Äíœ
 	/// </summary>
-	/// <param name="func">ã‚½ãƒ¼ãƒˆæ™‚ã®é–¢æ•°</param>
-	void Sort(Iterator first, Iterator last, std::function<bool(T &, T &)> func) {
-		// nullãƒã‚§ãƒƒã‚¯
-		if (func == nullptr) return;
-
-		if (first == last || first == --Iterator(last)) return;
-
-		Iterator pivot = first;
-		Iterator tmp;
-
-		// å…ˆé ­å´ã¨æœ«å°¾å´ã§ãƒ‡ãƒ¼ã‚¿ã‚’åˆ†å‰²ã‚’ã™ã‚‹
-
-		for (Iterator i = ++Iterator(first); i != last; ++i) {
-			// ã‚‚ã—åŸºæº–å€¤ã¨æ¯”è¼ƒã—ãŸçµæœå½“ã¦ã¯ã¾ã‚‰ãªã‘ã‚Œã°ã€å…ˆé ­å´ã«ç§»å‹•
-			if (func(*i , *pivot)) {
-				tmp = i--;
-
-				// å…ˆé ­ã¸ç§»å‹•
-				Leave(tmp);
-				Link(first, tmp);
-
-				// å…ˆé ­ã‚¤ãƒ†ãƒ¬ãƒ¼ã‚¿ã‚’æ›´æ–°
-				first = tmp;
-			}
-		}
-
-		if (first != pivot) Sort(first, pivot,func);
-		if (last != pivot) Sort(++Iterator(pivot), last, func);
-	}
-
-	/// <summary>
-	/// å…ˆé ­ã®ã‚¤ãƒ†ãƒ¬ãƒ¼ã‚¿ã‚’å–å¾—
-	/// </summary>
-	/// <returns>å…ˆé ­ã®ã‚¤ãƒ†ãƒ¬ãƒ¼ã‚¿</returns>
-	Iterator begin(void) {
-		return Iterator(dummy.pNext, this);
-	}
-
-	/// <summary>
-	/// æœ«å°¾ã®ã‚¤ãƒ†ãƒ¬ãƒ¼ã‚¿ã‚’å–å¾—
-	/// </summary>
-	/// <returns>æœ«å°¾ã®ã‚¤ãƒ†ãƒ¬ãƒ¼ã‚¿</returns>
-	Iterator end(void) {
-		return Iterator(&dummy, this);
-	}
-
-	/// <summary>
-	/// å…ˆé ­ã®ã‚³ãƒ³ã‚¹ãƒˆã‚¤ãƒ†ãƒ¬ãƒ¼ã‚¿ã‚’å–å¾—
-	/// </summary>
-	/// <returns>å…ˆé ­ã®ã‚³ãƒ³ã‚¹ãƒˆã‚¤ãƒ†ãƒ¬ãƒ¼ã‚¿</returns>
-	ConstIterator cbegin(void) const {
-		return ConstIterator(dummy.pNext, const_cast<List<T>*>(this));
-	}
-
-	/// <summary>
-	/// æœ«å°¾ã®ã‚³ãƒ³ã‚¹ãƒˆã‚¤ãƒ†ãƒ¬ãƒ¼ã‚¿ã‚’å–å¾—
-	/// </summary>
-	/// <returns>æœ«å°¾ã®ã‚³ãƒ³ã‚¹ãƒˆã‚¤ãƒ†ãƒ¬ãƒ¼ã‚¿</returns>
-	ConstIterator cend(void) const {
-		return ConstIterator(const_cast<Node*>(&dummy), const_cast<List<T>*>(this));
-	}
-
-	/// <summary>
-	/// å…ˆé ­ã®å€¤ã‚’å–å¾—
-	/// </summary>
-	/// <returns>å…ˆé ­ã®å€¤</returns>
-	T &front(void) {
-		assert(dummy.pNext->pValue);
-		return *dummy.pPrev->pValue;
-	}
-
-	/// <summary>
-	/// æœ«å°¾ã®å€¤ã‚’å–å¾—
-	/// </summary>
-	/// <returns>æœ«å°¾ã®å€¤</returns>
-	T &back(void) {
-		assert(dummy.pPrev->pValue);
-		return *dummy.pPrev->pValue;
-	}
+	void Clear(void);
 
 private:
 	
 	/// <summary>
-	/// ç¹‹ã’ã‚‹
+	/// Œq‚°‚é
 	/// </summary>
-	/// <param name="pThis">å ´æ‰€ã‚’æŒ‡å®šã™ã‚‹ãƒãƒ¼ãƒ‰ãƒã‚¤ãƒ³ã‚¿</param>
-	/// <param name="pOther">æ–°ã—ãç¹‹ã’ãŸã„ãƒãƒ¼ãƒ‰ãƒã‚¤ãƒ³ã‚¿</param>
-	void Link(Node *pThis, Node *pOther) {
-		if (pThis == pOther) return;
-
-		// ç¹‹ã’ã‚‹å‡¦ç†
-		pOther->pPrev = pThis->pPrev;
-		pThis->pPrev = pOther;
-		pOther->pNext = pThis;
-		if (pOther->pPrev) pOther->pPrev->pNext = pOther;
-	}
+	/// <param name="pThis">êŠ‚ğw’è‚·‚éƒm[ƒhƒ|ƒCƒ“ƒ^</param>
+	/// <param name="pOther">V‚µ‚­Œq‚°‚½‚¢ƒm[ƒhƒ|ƒCƒ“ƒ^</param>
+	void Link(Node *pThis, Node *pOther);
 	
 	/// <summary>
-	/// ç¹‹ã’ã‚‹
+	/// Œq‚°‚é
 	/// </summary>
-	/// <param name="thisIter">å ´æ‰€ã‚’æŒ‡å®šã™ã‚‹ã‚¤ãƒ†ãƒ¬ãƒ¼ã‚¿</param>
-	/// <param name="otherIter">æ–°ã—ãç¹‹ã’ãŸã„ã‚¤ãƒ†ãƒ¬ãƒ¼ã‚¿</param>
-	void Link(Iterator thisIter, Iterator otherIter) {
-		Link(thisIter.GetNode(), otherIter.GetNode());
-	}
+	/// <param name="thisIter">êŠ‚ğw’è‚·‚éƒCƒeƒŒ[ƒ^</param>
+	/// <param name="otherIter">V‚µ‚­Œq‚°‚½‚¢ƒCƒeƒŒ[ƒ^</param>
+	void Link(Iterator thisIter, Iterator otherIter);
 
 	/// <summary>
-	/// é›¢ã™
+	/// —£‚·
 	/// </summary>
-	/// <param name="pThis">æ¥ç¶šã‚’åˆ‡ã‚‹ãƒãƒ¼ãƒ‰ãƒã‚¤ãƒ³ã‚¿</param>
-	void Leave(Node *pThis) {
-		// åˆ‡ã‚Šé›¢ã™å‡¦ç†
-		if (pThis->pNext) pThis->pNext->pPrev = pThis->pPrev;
-		if (pThis->pPrev) pThis->pPrev->pNext = pThis->pNext;
-		pThis->pNext = pThis->pPrev = nullptr;
-	}
+	/// <param name="pThis">Ú‘±‚ğØ‚éƒm[ƒhƒ|ƒCƒ“ƒ^</param>
+	void Leave(Node *pThis);
 
 	/// <summary>
-	/// é›¢ã™
+	/// —£‚·
 	/// </summary>
-	/// <param name="thisIter">æ¥ç¶šã‚’åˆ‡ã‚‹ã‚¤ãƒ†ãƒ¬ãƒ¼ã‚¿</param>
-	void Leave(Iterator thisIter) {
-		Leave(thisIter.GetNode());
-	}
+	/// <param name="thisIter">Ú‘±‚ğØ‚éƒCƒeƒŒ[ƒ^</param>
+	void Leave(Iterator thisIter);
 
 
 
 public:
-	/*--- ã‚¢ã‚¯ã‚»ã‚µé–¢æ•° ---*/
+	/*--- ƒAƒNƒZƒTŠÖ” ---*/
 
 	/// <summary>
-	/// è¦ç´ æ•°ã‚’å–å¾—
+	/// æ“ª‚ÌƒCƒeƒŒ[ƒ^‚ğæ“¾
 	/// </summary>
-	/// <returns>è¦ç´ æ•°</returns>
+	/// <returns>æ“ª‚ÌƒCƒeƒŒ[ƒ^</returns>
+	Iterator begin(void);
+
+	/// <summary>
+	/// ––”ö‚ÌƒCƒeƒŒ[ƒ^‚ğæ“¾
+	/// </summary>
+	/// <returns>––”ö‚ÌƒCƒeƒŒ[ƒ^</returns>
+	Iterator end(void);
+
+	/// <summary>
+	/// æ“ª‚ÌƒRƒ“ƒXƒgƒCƒeƒŒ[ƒ^‚ğæ“¾
+	/// </summary>
+	/// <returns>æ“ª‚ÌƒCƒeƒŒ[ƒ^</returns>
+	ConstIterator begin(void) const;
+
+	/// <summary>
+	/// ––”ö‚ÌƒRƒ“ƒXƒgƒCƒeƒŒ[ƒ^‚ğæ“¾
+	/// </summary>
+	/// <returns>––”ö‚ÌƒCƒeƒŒ[ƒ^</returns>
+	ConstIterator end(void) const;
+
+	/// <summary>
+	/// æ“ª‚ÌƒRƒ“ƒXƒgƒCƒeƒŒ[ƒ^‚ğæ“¾
+	/// </summary>
+	/// <returns>æ“ª‚ÌƒRƒ“ƒXƒgƒCƒeƒŒ[ƒ^</returns>
+	ConstIterator cbegin(void) const;
+
+	/// <summary>
+	/// ––”ö‚ÌƒRƒ“ƒXƒgƒCƒeƒŒ[ƒ^‚ğæ“¾
+	/// </summary>
+	/// <returns>––”ö‚ÌƒRƒ“ƒXƒgƒCƒeƒŒ[ƒ^</returns>
+	ConstIterator cend(void) const;
+
+	/// <summary>
+	/// æ“ª‚Ì’l‚ğæ“¾
+	/// </summary>
+	/// <returns>æ“ª‚Ì’l</returns>
+	T &front(void);
+
+	/// <summary>
+	/// ––”ö‚Ì’l‚ğæ“¾
+	/// </summary>
+	/// <returns>––”ö‚Ì’l</returns>
+	T &back(void);
+
+	/// <summary>
+	/// —v‘f”‚ğæ“¾
+	/// </summary>
+	/// <returns>—v‘f”</returns>
 	unsigned int GetCount(void) const { return count; }
 };
 
+
+#include "List.inl"
 
 #endif
