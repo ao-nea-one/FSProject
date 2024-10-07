@@ -37,7 +37,7 @@ public:
 	/// </returns>
 	bool Push(const T &value) {
 		// ––”ö‚É‘}“ü
-		return list.Insert(list.end(), value)
+		return list.Insert(list.end(), value);
 	}
 
 	/// <summary>
@@ -56,7 +56,7 @@ public:
 		if (pDst) *pDst = list.front();
 
 		// æ“ª‚Ìƒm[ƒh‚ğíœ
-		return list.Remove(--list.end());
+		return list.Remove(list.begin());
 	}
 
 	/// <summary>
