@@ -37,7 +37,7 @@ public:
 	/// </returns>
 	bool Push(const T &value) {
 		// ––”ö‚É‘}“ü
-		return list.Insert(list.end(), value)
+		return list.Insert(list.end(), value);
 	}
 
 	/// <summary>

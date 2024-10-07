@@ -1,0 +1,48 @@
+#include "pch.h"
+#include "ManualTest1_5.h"
+#include <gtest/gtest.h>
+
+/*--- include ---*/
+#include "../StackAndQueue/Stack.h"
+#include "../StackAndQueue/Queue.h"
+
+
+
+#ifdef NO01_05_Test
+
+#ifdef ID07_STACK_COMPILE_ERROR_CHECK
+
+	/// <summary>
+	/// テスト項目　　：型などが不適切なキー指定が引数で渡された時の挙動
+	/// 意図する結果　：コンパイルエラーとなる
+	/// 補足　　　　　：コンパイルエラーをチェック。自動テスト化しない
+	/// </summary>
+TEST(QuickSortTest, ID07_WrongKey) {
+	List<int> list;
+
+	list.Insert(list.end(), 5);
+	list.Insert(list.end(), 1);
+	list.Insert(list.end(), 3);
+
+	// キーの指定なしでソート
+}
+
+#endif
+
+
+
+#ifdef ID10_STACK_COMPILE_ERROR_CHECK
+
+/// <summary>
+/// テスト項目　　：非constのメソッドであるか
+/// 意図する結果　：コンパイルエラーとなる
+/// 補足　　　　　：constのリストから呼び出して、コンパイルエラーとなるかをチェック。自動テスト化しなくてよい。
+/// </summary>
+TEST(QuickSortTest, ID08_Const) {
+	const List<int> list;
+
+}
+
+#endif
+
+#endif

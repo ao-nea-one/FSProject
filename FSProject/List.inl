@@ -1,19 +1,6 @@
 
 /*--- ConstIterator ---*/
 
-/*--- コンストラクタ ---*/
-
-template<class T>
-List<T>::ConstIterator::ConstIterator(ConstIterator &&iter) noexcept {
-	pNode = iter.pNode;
-	pParent = iter.pParent;
-
-	iter.pNode = nullptr;
-	iter.pParent = nullptr;
-}
-
-
-
 
 
 /*--- オペレータ ---*/
@@ -116,51 +103,35 @@ bool List<T>::ConstIterator::operator!=(List<T>::ConstIterator &iter) const {
 
 template<class T>
 typename List<T>::Iterator &List<T>::Iterator::operator++() {
-	++(*static_cast<ConstIterator *>(this));
+	++(*((ConstIterator *)this));
 
 	return *this;
 }
-
-
-
-
 
 template<class T>
 typename List<T>::Iterator &List<T>::Iterator::operator--() {
-	--(*static_cast<ConstIterator *>(this));
+	--(*((ConstIterator *)this));
 
 	return *this;
 }
-
-
-
-
 
 template<class T>
 typename List<T>::Iterator List<T>::Iterator::operator++(int) {
 	Iterator old = *this;
 
-	(*static_cast<ConstIterator *>(this))++;
+	(*((ConstIterator *)this))++;
 
 	return old;
 }
-
-
-
-
 
 template<class T>
 typename List<T>::Iterator List<T>::Iterator::operator--(int) {
 	Iterator old = *this;
 
-	(*static_cast<ConstIterator *>(this))--;
+	(*((ConstIterator *)this))--;
 
 	return old;
 }
-
-
-
-
 
 template<class T>
 T &List<T>::Iterator::operator*() {
@@ -170,22 +141,14 @@ T &List<T>::Iterator::operator*() {
 	return ConstIterator::pNode->value;
 }
 
-
-
-
-
 template<class T>
 bool List<T>::Iterator::operator==(List<T>::Iterator &iter) {
-	return *static_cast<ConstIterator *>(this) == *static_cast<ConstIterator *>(&iter);
+	return *((ConstIterator *)(this)) == *((ConstIterator *)(&iter));
 }
-
-
-
-
 
 template<class T>
 bool List<T>::Iterator::operator!=(List<T>::Iterator &iter) {
-	return *static_cast<ConstIterator *>(this) != *static_cast<ConstIterator *>(&iter);
+	return *((ConstIterator *)(this)) != *((ConstIterator *)(&iter));
 }
 
 
@@ -381,7 +344,7 @@ typename List<T>::ConstIterator List<T>::begin(void) const {
 
 
 template<class T>
-typename List<T>::ConstIterator List<T>::end(void) const {
+typename List<T>::ConstIterator List<T>::end(void)const {
 	return ConstIterator(&dummy, this);
 }
 

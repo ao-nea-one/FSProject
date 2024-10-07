@@ -22,6 +22,13 @@ namespace No01_04_QuickSort {
 
 		// 空でソート
 		list.Sort(list.begin(), list.end(), [](int &a, int &b) { return a < b; });
+
+		list.Insert(list.begin(), 0);
+		list.Insert(list.begin(), 1);
+		list.Insert(list.begin(), 2);
+		list.Insert(list.begin(), 3);
+		list.Insert(list.begin(), 4);
+		list.Insert(list.begin(), 5);
 	}
 
 	/// <summary>
@@ -153,9 +160,9 @@ namespace No01_04_QuickSort {
 
 		// 再度挿入
 		iter = list.begin();
+		list.Insert(++iter, 2);
 		list.Insert(++iter, 4);
 		list.Insert(++iter, 6);
-		list.Insert(++iter, 2);
 
 		// 再度ソート
 		list.Sort(list.begin(), list.end(), [](int &a, int &b) { return a < b; });
@@ -185,6 +192,7 @@ namespace No01_04_QuickSort {
 		// キーの指定なしでソート
 		list.Sort(list.begin(), list.end(), nullptr);
 	}
+	//*/
 }
 
 #endif

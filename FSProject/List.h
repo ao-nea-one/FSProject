@@ -70,7 +70,13 @@ public:
 
 		ConstIterator(Node *pNode, const List<T> *pParent) : pNode(pNode), pParent(pParent) { }
 
-		ConstIterator(ConstIterator &&iter) noexcept;
+		ConstIterator(ConstIterator &&iter) {
+			pNode = iter.pNode;
+			pParent = iter.pParent;
+
+			iter.pNode = nullptr;
+			iter.pParent = nullptr;
+		}
 
 
 
