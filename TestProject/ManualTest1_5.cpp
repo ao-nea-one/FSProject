@@ -8,8 +8,6 @@
 
 
 
-#ifdef NO01_05_Test
-
 #ifdef ID07_STACK_NO_COMPILE_ERROR_CHECK
 
 	/// <summary>
@@ -105,7 +103,5 @@ TEST(QueuePush, ID14_Const) {
 
 	queue.Pop(&tmp);
 }
-
-#endif
 
 #endif
