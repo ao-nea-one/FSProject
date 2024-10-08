@@ -70,13 +70,7 @@ public:
 
 		ConstIterator(Node *pNode, const List<T> *pParent) : pNode(pNode), pParent(pParent) { }
 
-		ConstIterator(ConstIterator &&iter) {
-			pNode = iter.pNode;
-			pParent = iter.pParent;
-
-			iter.pNode = nullptr;
-			iter.pParent = nullptr;
-		}
+		ConstIterator(ConstIterator &&iter) noexcept;
 
 
 
@@ -143,10 +137,6 @@ public:
 		Iterator operator--(int);
 
 		T &operator*();
-
-		bool operator==(Iterator &iter);
-
-		bool operator!=(Iterator &iter);
 	};
 
 
@@ -163,7 +153,7 @@ public:
 	/*--- コンストラクタ ---*/
 
 	List() = default;
-	
+
 
 
 public:
@@ -201,8 +191,7 @@ public:
 	/// ソート
 	/// </summary>
 	/// <param name="func">ソート時の関数</param>
-	void Sort(Iterator first, Iterator last, std::function<bool(T &, T &)> func);
-
+	void Sort(std::function<bool(T &, T &)> func);
 
 	/// <summary>
 	/// 全て削除
@@ -210,14 +199,14 @@ public:
 	void Clear(void);
 
 private:
-	
+
 	/// <summary>
 	/// 繋げる
 	/// </summary>
 	/// <param name="pThis">場所を指定するノードポインタ</param>
 	/// <param name="pOther">新しく繋げたいノードポインタ</param>
 	void Link(Node *pThis, Node *pOther);
-	
+
 	/// <summary>
 	/// 繋げる
 	/// </summary>
@@ -236,6 +225,12 @@ private:
 	/// </summary>
 	/// <param name="thisIter">接続を切るイテレータ</param>
 	void Leave(Iterator thisIter);
+
+	/// <summary>
+	/// ソート
+	/// </summary>
+	/// <param name="func">ソート時の関数</param>
+	void Sort(Iterator first, Iterator last, std::function<bool(T &, T &)> func);
 
 
 

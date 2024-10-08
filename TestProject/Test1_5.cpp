@@ -5,8 +5,7 @@
 #include "../StackAndQueue/Stack.h"
 #include "../StackAndQueue/Queue.h"
 
-#define NO01_05_Test
-#ifdef NO01_05_Test
+
 
 namespace No01_05_StackAndQueue {
 
@@ -458,5 +457,3 @@ namespace No01_05_StackAndQueue {
 TEST(GetDataNum, ID00_) {
 
 }
-
-#endif

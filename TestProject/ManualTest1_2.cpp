@@ -7,8 +7,6 @@
 
 
 
-#ifdef NO01_02_Test
-
 #ifdef ID08_NO_COMPILE_ERROR_CHECK
 /// <summary>
 /// const‚Ìƒƒ\ƒbƒh‚Å‚ ‚é‚©
@@ -146,6 +144,4 @@ TEST(UserIterator, ID19_ConstIteratorToIterator) {
 	List<int>::Iterator iter;
 	iter = list.cbegin();
 }
-#endif
-
 #endif

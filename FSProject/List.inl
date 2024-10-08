@@ -1,6 +1,19 @@
 
 /*--- ConstIterator ---*/
 
+/*--- コンストラクタ ---*/
+
+template<class T>
+List<T>::ConstIterator::ConstIterator(ConstIterator &&iter) noexcept {
+	pNode = iter.pNode;
+	pParent = iter.pParent;
+
+	iter.pNode = nullptr;
+	iter.pParent = nullptr;
+}
+
+
+
 
 
 /*--- オペレータ ---*/
@@ -103,35 +116,51 @@ bool List<T>::ConstIterator::operator!=(List<T>::ConstIterator &iter) const {
 
 template<class T>
 typename List<T>::Iterator &List<T>::Iterator::operator++() {
-	++(*((ConstIterator *)this));
+	++(*static_cast<ConstIterator *>(this));
 
 	return *this;
 }
+
+
+
+
 
 template<class T>
 typename List<T>::Iterator &List<T>::Iterator::operator--() {
-	--(*((ConstIterator *)this));
+	--(*static_cast<ConstIterator *>(this));
 
 	return *this;
 }
+
+
+
+
 
 template<class T>
 typename List<T>::Iterator List<T>::Iterator::operator++(int) {
 	Iterator old = *this;
 
-	(*((ConstIterator *)this))++;
+	(*static_cast<ConstIterator *>(this))++;
 
 	return old;
 }
+
+
+
+
 
 template<class T>
 typename List<T>::Iterator List<T>::Iterator::operator--(int) {
 	Iterator old = *this;
 
-	(*((ConstIterator *)this))--;
+	(*static_cast<ConstIterator *>(this))--;
 
 	return old;
 }
+
+
+
+
 
 template<class T>
 T &List<T>::Iterator::operator*() {
@@ -139,16 +168,6 @@ T &List<T>::Iterator::operator*() {
 	assert(ConstIterator::pNode != &ConstIterator::pParent->dummy);
 
 	return ConstIterator::pNode->value;
-}
-
-template<class T>
-bool List<T>::Iterator::operator==(List<T>::Iterator &iter) {
-	return *((ConstIterator *)(this)) == *((ConstIterator *)(&iter));
-}
-
-template<class T>
-bool List<T>::Iterator::operator!=(List<T>::Iterator &iter) {
-	return *((ConstIterator *)(this)) != *((ConstIterator *)(&iter));
 }
 
 
@@ -212,33 +231,8 @@ bool List<T>::Remove(List<T>::ConstIterator iter) {
 
 
 template<class T>
-void List<T>::Sort(Iterator first, Iterator last, std::function<bool(T &, T &)> func) {
-	// nullチェック
-	if (func == nullptr) return;
-
-	if (first == last || first == --Iterator(last)) return;
-
-	Iterator pivot = first;
-	Iterator tmp;
-
-	// 先頭側と末尾側でデータを分割をする
-
-	for (auto i = ++Iterator(first); i != last; ++i) {
-		// もし基準値と比較した結果当てはまらなければ、先頭側に移動
-		if (func(*i, *pivot)) {
-			tmp = i--;
-
-			// 先頭へ移動
-			Leave(tmp);
-			Link(first, tmp);
-
-			// 先頭イテレータを更新
-			first = tmp;
-		}
-	}
-
-	if (first != pivot) Sort(first, pivot, func);
-	if (last != pivot) Sort(++Iterator(pivot), last, func);
+void List<T>::Sort(std::function<bool(T &, T &)> func) {
+	Sort(begin(), end(), func);
 }
 
 
@@ -314,6 +308,40 @@ void List<T>::Leave(Iterator thisIter) {
 
 
 
+template<class T>
+void List<T>::Sort(Iterator first, Iterator last, std::function<bool(T &, T &)> func) {
+	// nullチェック
+	if (func == nullptr) return;
+
+	if (first == last || first == --Iterator(last)) return;
+
+	Iterator pivot = first;
+	Iterator tmp;
+
+	// 先頭側と末尾側でデータを分割をする
+
+	for (auto i = ++Iterator(first); i != last; ++i) {
+		// もし基準値と比較した結果当てはまらなければ、先頭側に移動
+		if (func(*i, *pivot)) {
+			tmp = i--;
+
+			// 先頭へ移動
+			Leave(tmp);
+			Link(first, tmp);
+
+			// 先頭イテレータを更新
+			first = tmp;
+		}
+	}
+
+	if (first != pivot) Sort(first, pivot, func);
+	if (last != pivot) Sort(++Iterator(pivot), last, func);
+}
+
+
+
+
+
 /*--- アクセサ関数 ---*/
 
 template<class T>
@@ -344,7 +372,7 @@ typename List<T>::ConstIterator List<T>::begin(void) const {
 
 
 template<class T>
-typename List<T>::ConstIterator List<T>::end(void)const {
+typename List<T>::ConstIterator List<T>::end(void) const {
 	return ConstIterator(&dummy, this);
 }
 

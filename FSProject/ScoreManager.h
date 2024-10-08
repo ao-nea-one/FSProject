@@ -11,25 +11,8 @@
 
 /*--- include ---*/
 
-#include <string>
+#include "ScoreInfo.h"
 #include "List.h"
-
-
-/*--- struct ---*/
-
-/// <summary>
-/// スコア情報
-/// </summary>
-struct ScoreInfo {
-	int score = 0;			// スコア
-	std::string playerName;	// プレイヤー名
-
-
-
-	/*--- メンバー関数 ---*/
-
-	ScoreInfo() = default;
-};
 
 
 
