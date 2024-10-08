@@ -22,7 +22,7 @@ TEST(QuickSortTest, ID07_WrongKey) {
 	list.Insert(list.end(), 3);
 
 	// キーの指定なしでソート
-	list.Sort(list.begin(), list.end(), [](float &a, bool &b) { return a < b; });
+	list.Sort([](float &a, bool &b) { return a < b; });
 }
 
 #endif
@@ -40,7 +40,7 @@ TEST(QuickSortTest, ID08_Const) {
 	const List<int> list;
 
 	// キーの指定なしでソート
-	list.Sort(list.begin(), list.end(), [](int &a, int &b) { return a < b; });
+	list.Sort([](int &a, int &b) { return a < b; });
 }
 
 #endif
