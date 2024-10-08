@@ -174,24 +174,6 @@ T &List<T>::Iterator::operator*() {
 
 
 
-template<class T>
-bool List<T>::Iterator::operator==(List<T>::Iterator &iter) {
-	return *static_cast<ConstIterator *>(this) == *static_cast<ConstIterator *>(&iter);
-}
-
-
-
-
-
-template<class T>
-bool List<T>::Iterator::operator!=(List<T>::Iterator &iter) {
-	return *static_cast<ConstIterator *>(this) != *static_cast<ConstIterator *>(&iter);
-}
-
-
-
-
-
 /*--- List ---*/
 
 /*--- メンバー関数 ---*/
@@ -249,33 +231,8 @@ bool List<T>::Remove(List<T>::ConstIterator iter) {
 
 
 template<class T>
-void List<T>::Sort(Iterator first, Iterator last, std::function<bool(T &, T &)> func) {
-	// nullチェック
-	if (func == nullptr) return;
-
-	if (first == last || first == --Iterator(last)) return;
-
-	Iterator pivot = first;
-	Iterator tmp;
-
-	// 先頭側と末尾側でデータを分割をする
-
-	for (auto i = ++Iterator(first); i != last; ++i) {
-		// もし基準値と比較した結果当てはまらなければ、先頭側に移動
-		if (func(*i, *pivot)) {
-			tmp = i--;
-
-			// 先頭へ移動
-			Leave(tmp);
-			Link(first, tmp);
-
-			// 先頭イテレータを更新
-			first = tmp;
-		}
-	}
-
-	if (first != pivot) Sort(first, pivot, func);
-	if (last != pivot) Sort(++Iterator(pivot), last, func);
+void List<T>::Sort(std::function<bool(T &, T &)> func) {
+	Sort(begin(), end(), func);
 }
 
 
@@ -345,6 +302,40 @@ void List<T>::Leave(Node *pThis) {
 template<class T>
 void List<T>::Leave(Iterator thisIter) {
 	Leave(thisIter.GetNode());
+}
+
+
+
+
+
+template<class T>
+void List<T>::Sort(Iterator first, Iterator last, std::function<bool(T &, T &)> func) {
+	// nullチェック
+	if (func == nullptr) return;
+
+	if (first == last || first == --Iterator(last)) return;
+
+	Iterator pivot = first;
+	Iterator tmp;
+
+	// 先頭側と末尾側でデータを分割をする
+
+	for (auto i = ++Iterator(first); i != last; ++i) {
+		// もし基準値と比較した結果当てはまらなければ、先頭側に移動
+		if (func(*i, *pivot)) {
+			tmp = i--;
+
+			// 先頭へ移動
+			Leave(tmp);
+			Link(first, tmp);
+
+			// 先頭イテレータを更新
+			first = tmp;
+		}
+	}
+
+	if (first != pivot) Sort(first, pivot, func);
+	if (last != pivot) Sort(++Iterator(pivot), last, func);
 }
 
 

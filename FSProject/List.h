@@ -137,10 +137,6 @@ public:
 		Iterator operator--(int);
 
 		T &operator*();
-
-		bool operator==(Iterator &iter);
-
-		bool operator!=(Iterator &iter);
 	};
 
 
@@ -195,8 +191,7 @@ public:
 	/// ソート
 	/// </summary>
 	/// <param name="func">ソート時の関数</param>
-	void Sort(Iterator first, Iterator last, std::function<bool(T &, T &)> func);
-
+	void Sort(std::function<bool(T &, T &)> func);
 
 	/// <summary>
 	/// 全て削除
@@ -230,6 +225,12 @@ private:
 	/// </summary>
 	/// <param name="thisIter">接続を切るイテレータ</param>
 	void Leave(Iterator thisIter);
+
+	/// <summary>
+	/// ソート
+	/// </summary>
+	/// <param name="func">ソート時の関数</param>
+	void Sort(Iterator first, Iterator last, std::function<bool(T &, T &)> func);
 
 
 
