@@ -1,13 +1,19 @@
 #include "../FSProject/List.h"
+#include "Dictionary.h"
 #include <iostream>
 #include <string>
+#include <vector>
 
 
 
 
 int main(void) {
-	List<int> list;
-	//auto i = std::hash<std::string>()("Hello");
-	//std::cout << i << std::endl;
+	Dictionary<std::string, int> dictionary;
+
+	dictionary.Insert("A", 0);
+	dictionary.Insert("B", 1);
+	dictionary.Insert("C", 2);
+
+
 	return 0;
 }
