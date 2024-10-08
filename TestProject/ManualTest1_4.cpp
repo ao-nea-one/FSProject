@@ -7,8 +7,6 @@
 
 
 
-#ifdef NO01_04_Test
-
 #ifdef ID07_COMPILE_ERROR_CHECK
 
 	/// <summary>
@@ -44,7 +42,5 @@ TEST(QuickSortTest, ID08_Const) {
 	// キーの指定なしでソート
 	list.Sort(list.begin(), list.end(), [](int &a, int &b) { return a < b; });
 }
-
-#endif
 
 #endif
