@@ -4,13 +4,86 @@
 
 /*--- include ---*/
 #include "../FSProject/List.h"
-#include "ManualTest1_4.h"
 
 
-
-#ifdef NO01_04_Test
 
 namespace No01_04_QuickSort {
+
+	// プレイヤークラス
+	struct Player {
+		/*--- メンバー変数 ---*/
+
+		int hp;
+		float weight;
+
+
+
+		/*--- コンストラクタ ---*/
+
+		Player() = default;
+		Player(int hp) : hp(hp) { };
+		Player(float weight) : weight(weight) { };
+		Player(int hp, float weight) : hp(hp), weight(weight) { };
+	};
+
+	auto COMP_HP_ASC = [](Player &a, Player &b) { return a.hp < b.hp; };
+	auto COMP_HP_DESC = [](Player &a, Player &b) { return a.hp > b.hp; };
+	auto COMP_HP_EQ = [](Player &a, int &b) { return a.hp == b; };
+	auto COMP_WEIGHT_ASC = [](Player &a, Player &b) { return a.weight < b.weight; };
+	auto COMP_WEIGHT_DESC = [](Player &a, Player &b) { return a.weight > b.weight; };
+	auto COMP_WEIGHT_EQ = [](Player &a, float &b) { return a.weight == b; };
+
+	/// <summary>
+	/// HPの値が順番通りか比較する
+	/// </summary>
+	/// <param name="list"></param>
+	/// <param name="expectedParams"></param>
+	/// <param name="compEQ"></param>
+	void CheckEQElementHP(List<Player> &list, std::vector<int> expectedParams, std::function<bool(Player &, int &)> compEQ) {
+		// 要素数が同じでないなら実行しない
+		ASSERT_EQ(list.GetCount(), expectedParams.size());
+
+		// イテレータを使用してすべての要素をチェック
+		auto it = list.begin();
+		auto expectedIt = expectedParams.begin();
+
+		while (it != list.end() && expectedIt != expectedParams.end()) {
+			// 値をチェック
+			ASSERT_EQ(compEQ(*it, *expectedIt), true);
+
+			// 次の要素に進む
+			++it;
+			++expectedIt;
+		}
+	}
+
+	/// <summary>
+	/// weightの値が順番通りか比較する
+	/// </summary>
+	/// <param name="list"></param>
+	/// <param name="expectedParams"></param>
+	/// <param name="compEQ"></param>
+	void CheckEQElementWeight(List<Player> &list, std::vector<float> expectedParams, std::function<bool(Player &, float &)> compEQ) {
+		// 要素数が同じでないなら実行しない
+		ASSERT_EQ(list.GetCount(), expectedParams.size());
+
+		// イテレータを使用してすべての要素をチェック
+		auto it = list.begin();
+		auto expectedIt = expectedParams.begin();
+
+		while (it != list.end() && expectedIt != expectedParams.end()) {
+			// 値をチェック
+			ASSERT_TRUE(compEQ(*it, *expectedIt));
+
+			// 次の要素に進む
+			++it;
+			++expectedIt;
+		}
+	}
+
+
+
+
 
 	/// <summary>
 	/// テスト項目　　：要素を持たないリストにソートを実行した時の挙動
@@ -18,17 +91,20 @@ namespace No01_04_QuickSort {
 	/// 意図する結果　：エラー含めて、何も起こらない
 	/// </summary>
 	TEST(QuickSortTest, ID00_SortEmpty) {
-		List<int> list;
+		List<Player> list;
 
 		// 空でソート
-		list.Sort(list.begin(), list.end(), [](int &a, int &b) { return a < b; });
+		list.Sort(COMP_HP_ASC);
+		EXPECT_EQ((list.begin() == list.end()), true);
 
-		list.Insert(list.begin(), 0);
-		list.Insert(list.begin(), 1);
-		list.Insert(list.begin(), 2);
-		list.Insert(list.begin(), 3);
-		list.Insert(list.begin(), 4);
-		list.Insert(list.begin(), 5);
+		list.Sort(COMP_HP_DESC);
+		EXPECT_EQ((list.begin() == list.end()), true);
+
+		list.Sort(COMP_WEIGHT_ASC);
+		EXPECT_EQ((list.begin() == list.end()), true);
+
+		list.Sort(COMP_WEIGHT_DESC);
+		EXPECT_EQ((list.begin() == list.end()), true);
 	}
 
 	/// <summary>
@@ -37,14 +113,22 @@ namespace No01_04_QuickSort {
 	/// 意図する結果　：エラー含めて、何も起こらない
 	/// </summary>
 	TEST(QuickSortTest, ID01_SortOne) {
-		List<int> list;
+		List<Player> list;
 
-		list.Insert(list.begin(), 0);
+		list.Insert(list.begin(), { 0, 0.0f });
 
 		// 1要素だけでソート
-		list.Sort(list.begin(), list.end(), [](int &a, int &b) { return a < b; });
+		list.Sort(COMP_HP_ASC);
+		EXPECT_EQ((*list.begin()).hp, 0);
 
-		EXPECT_EQ(*list.begin(), 0);
+		list.Sort(COMP_HP_DESC);
+		EXPECT_EQ((*list.begin()).hp, 0);
+
+		list.Sort(COMP_WEIGHT_ASC);
+		EXPECT_EQ((*list.begin()).weight, 0.0f);
+
+		list.Sort(COMP_WEIGHT_DESC);
+		EXPECT_EQ((*list.begin()).weight, 0.0f);
 	}
 
 	/// <summary>
@@ -54,24 +138,33 @@ namespace No01_04_QuickSort {
 	/// 補足　　　　　：先頭から順にイテレータで確認し、ノードの差し替えが正常に行えているかチェック
 	/// </summary>
 	TEST(QuickSortTest, ID02_SortMultiple) {
-		List<int> list;
+		List<Player> list;
 
-		list.Insert(list.end(), 3);
-		list.Insert(list.end(), 1);
-		list.Insert(list.end(), 2);
-		list.Insert(list.end(), 5);
-		list.Insert(list.end(), 4);
+		list.Insert(list.end(), { 3, 2.0f });
+		list.Insert(list.end(), { 1, 4.0f });
+		list.Insert(list.end(), { 2, 1.0f });
+		list.Insert(list.end(), { 5, 5.0f });
+		list.Insert(list.end(), { 4, 3.0f });
 
 		// 複数の要素でソート
-		list.Sort(list.begin(), list.end(), [](int &a, int &b) { return a < b; });
+		list.Sort(COMP_HP_ASC);
+		CheckEQElementHP(list, { 1,2,3,4,5 }, COMP_HP_EQ);	// HPがソートされているかチェック
+		EXPECT_FALSE(HasFatalFailure());
 
-		// 値をチェック
-		auto iter = list.begin();
-		EXPECT_EQ(*iter++, 1);
-		EXPECT_EQ(*iter++, 2);
-		EXPECT_EQ(*iter++, 3);
-		EXPECT_EQ(*iter++, 4);
-		EXPECT_EQ(*iter++, 5);
+
+		list.Sort(COMP_HP_DESC);
+		CheckEQElementHP(list, { 5,4,3,2,1 }, COMP_HP_EQ);	// HPがソートされているかチェック
+		EXPECT_FALSE(HasFatalFailure());
+
+
+		list.Sort(COMP_WEIGHT_ASC);
+		CheckEQElementWeight(list, { 1.0f,2.0f,3.0f,4.0f,5.0f }, COMP_WEIGHT_EQ);	// weightがソートされているかチェック
+		EXPECT_FALSE(HasFatalFailure());
+
+
+		list.Sort(COMP_WEIGHT_DESC);
+		CheckEQElementWeight(list, { 5.0f,4.0f,3.0f,2.0f,1.0f }, COMP_WEIGHT_EQ);	// weightがソートされているかチェック
+		EXPECT_FALSE(HasFatalFailure());
 	}
 
 	/// <summary>
@@ -80,24 +173,33 @@ namespace No01_04_QuickSort {
 	/// 意図する結果　：要素がソートされて並ぶが、同じ要素の順序は保証されない
 	/// </summary>
 	TEST(QuickSortTest, ID03_SortSameElement) {
-		List<int> list;
+		List<Player> list;
 
-		list.Insert(list.end(), 3);
-		list.Insert(list.end(), 1);
-		list.Insert(list.end(), 4);
-		list.Insert(list.end(), 1);
-		list.Insert(list.end(), 5);
+		list.Insert(list.end(), { 3, 3.0f });
+		list.Insert(list.end(), { 1, 4.0f });
+		list.Insert(list.end(), { 1, 1.0f });
+		list.Insert(list.end(), { 5, 5.0f });
+		list.Insert(list.end(), { 4, 3.0f });
 
-		// 同じ要素があるリストでソート
-		list.Sort(list.begin(), list.end(), [](int &a, int &b) { return a < b; });
+		// 複数の要素でソート
+		list.Sort(COMP_HP_ASC);
+		CheckEQElementHP(list, { 1,1,3,4,5 }, COMP_HP_EQ);	// HPがソートされているかチェック
+		EXPECT_FALSE(HasFatalFailure());
 
-		// 値をチェック
-		auto iter = list.begin();
-		EXPECT_EQ(*iter++, 1);
-		EXPECT_EQ(*iter++, 1);
-		EXPECT_EQ(*iter++, 3);
-		EXPECT_EQ(*iter++, 4);
-		EXPECT_EQ(*iter++, 5);
+
+		list.Sort(COMP_HP_DESC);
+		CheckEQElementHP(list, { 5,4,3,1,1 }, COMP_HP_EQ);	// HPがソートされているかチェック
+		EXPECT_FALSE(HasFatalFailure());
+
+
+		list.Sort(COMP_WEIGHT_ASC);
+		CheckEQElementWeight(list, { 1.0f,3.0f,3.0f,4.0f,5.0f }, COMP_WEIGHT_EQ);	// weightがソートされているかチェック
+		EXPECT_FALSE(HasFatalFailure());
+
+
+		list.Sort(COMP_WEIGHT_DESC);
+		CheckEQElementWeight(list, { 5.0f,4.0f,3.0f,3.0f,1.0f }, COMP_WEIGHT_EQ);	// weightがソートされているかチェック
+		EXPECT_FALSE(HasFatalFailure());
 	}
 
 	/// <summary>
@@ -107,32 +209,39 @@ namespace No01_04_QuickSort {
 	/// 補足　　　　　：重複要素なしの整列済みリストを使う
 	/// </summary>
 	TEST(QuickSortTest, ID04_Resort) {
-		List<int> list;
+		List<Player> list;
 
-		list.Insert(list.end(), 2);
-		list.Insert(list.end(), 7);
-		list.Insert(list.end(), 1);
-		list.Insert(list.end(), 8);
+		list.Insert(list.end(), { 1, 1.0f });
+		list.Insert(list.end(), { 2, 2.0f });
+		list.Insert(list.end(), { 3, 3.0f });
 
-		// 1度目のソート
-		list.Sort(list.begin(), list.end(), [](int &a, int &b) { return a < b; });
+		// 複数の要素でソート
+		list.Sort(COMP_HP_ASC);
+		CheckEQElementHP(list, { 1,2,3 }, COMP_HP_EQ);	// HPがソートされているかチェック
+		EXPECT_FALSE(HasFatalFailure());
 
-		// 値をチェック
-		auto iter = list.begin();
-		EXPECT_EQ(*iter++, 1);
-		EXPECT_EQ(*iter++, 2);
-		EXPECT_EQ(*iter++, 7);
-		EXPECT_EQ(*iter++, 8);
 
-		// 整列済みのリストで再度ソート
-		list.Sort(list.begin(), list.end(), [](int &a, int &b) { return a < b; });
+		list.Sort(COMP_HP_DESC);
+		CheckEQElementHP(list, { 3,2,1 }, COMP_HP_EQ);	// HPがソートされているかチェック
+		EXPECT_FALSE(HasFatalFailure());
 
-		// 値をチェック
-		iter = list.begin();
-		EXPECT_EQ(*iter++, 1);
-		EXPECT_EQ(*iter++, 2);
-		EXPECT_EQ(*iter++, 7);
-		EXPECT_EQ(*iter++, 8);
+
+
+		// 再整列
+		list.Clear();
+		list.Insert(list.end(), { 3, 3.0f });
+		list.Insert(list.end(), { 2, 2.0f });
+		list.Insert(list.end(), { 1, 1.0f });
+
+
+		list.Sort(COMP_WEIGHT_ASC);
+		CheckEQElementWeight(list, { 1.0f,2.0f,3.0f }, COMP_WEIGHT_EQ);	// weightがソートされているかチェック
+		EXPECT_FALSE(HasFatalFailure());
+
+
+		list.Sort(COMP_WEIGHT_DESC);
+		CheckEQElementWeight(list, { 3.0f,2.0f,1.0f }, COMP_WEIGHT_EQ);	// weightがソートされているかチェック
+		EXPECT_FALSE(HasFatalFailure());
 	}
 
 	/// <summary>
@@ -142,39 +251,61 @@ namespace No01_04_QuickSort {
 	/// 補足　　　　　：重複要素なしの整列済みリストを使う
 	/// </summary>
 	TEST(QuickSortTest, ID05_ResortAndInsert) {
-		List<int> list;
+		List<Player> list;
 
-		list.Insert(list.end(), 5);
-		list.Insert(list.end(), 1);
-		list.Insert(list.end(), 3);
+		list.Insert(list.end(), { 4, 3.0f });
+		list.Insert(list.end(), { 2, 5.0f });
+		list.Insert(list.end(), { 6, 1.0f });
 
-		// 1度目のソート
-		list.Sort(list.begin(), list.end(), [](int &a, int &b) { return a < b; });
+		// 複数の要素でソート
+		list.Sort(COMP_HP_ASC);
+		CheckEQElementHP(list, { 2,4,6 }, COMP_HP_EQ);	// HPがソートされているかチェック
+		EXPECT_FALSE(HasFatalFailure());
 
-		// 値をチェック
-		auto iter = list.begin();
-		EXPECT_EQ(*iter++, 1);
-		EXPECT_EQ(*iter++, 3);
-		EXPECT_EQ(*iter++, 5);
+
+		list.Sort(COMP_HP_DESC);
+		CheckEQElementHP(list, { 6,4,2 }, COMP_HP_EQ);	// HPがソートされているかチェック
+		EXPECT_FALSE(HasFatalFailure());
+
+
+		list.Sort(COMP_WEIGHT_ASC);
+		CheckEQElementWeight(list, { 1.0f,3.0f,5.0f }, COMP_WEIGHT_EQ);	// weightがソートされているかチェック
+		EXPECT_FALSE(HasFatalFailure());
+
+
+		list.Sort(COMP_WEIGHT_DESC);
+		CheckEQElementWeight(list, { 5.0f,3.0f,1.0f }, COMP_WEIGHT_EQ);	// weightがソートされているかチェック
+		EXPECT_FALSE(HasFatalFailure());
+
+
+
+
 
 
 		// 再度挿入
-		iter = list.begin();
-		list.Insert(++iter, 2);
-		list.Insert(++iter, 4);
-		list.Insert(++iter, 6);
+		list.Insert(list.end(), { 3, 4.0f });
+		list.Insert(list.end(), { 5, 2.0f });
+		list.Insert(list.end(), { 1, 6.0f });
 
-		// 再度ソート
-		list.Sort(list.begin(), list.end(), [](int &a, int &b) { return a < b; });
+		// 複数の要素でソート
+		list.Sort(COMP_HP_ASC);
+		CheckEQElementHP(list, { 1,2,3,4,5,6 }, COMP_HP_EQ);	// HPがソートされているかチェック
+		EXPECT_FALSE(HasFatalFailure());
 
-		// 値をチェック
-		iter = list.begin();
-		EXPECT_EQ(*iter++, 1);
-		EXPECT_EQ(*iter++, 2);
-		EXPECT_EQ(*iter++, 3);
-		EXPECT_EQ(*iter++, 4);
-		EXPECT_EQ(*iter++, 5);
-		EXPECT_EQ(*iter++, 6);
+
+		list.Sort(COMP_HP_DESC);
+		CheckEQElementHP(list, { 6,5,4,3,2,1 }, COMP_HP_EQ);	// HPがソートされているかチェック
+		EXPECT_FALSE(HasFatalFailure());
+
+
+		list.Sort(COMP_WEIGHT_ASC);
+		CheckEQElementWeight(list, { 1.0f,2.0f,3.0f,4.0f,5.0f,6.0f }, COMP_WEIGHT_EQ);	// weightがソートされているかチェック
+		EXPECT_FALSE(HasFatalFailure());
+
+
+		list.Sort(COMP_WEIGHT_DESC);
+		CheckEQElementWeight(list, { 6.0f,5.0f,4.0f,3.0f,2.0f,1.0f }, COMP_WEIGHT_EQ);	// weightがソートされているかチェック
+		EXPECT_FALSE(HasFatalFailure());
 	}
 
 	/// <summary>
@@ -190,9 +321,6 @@ namespace No01_04_QuickSort {
 		list.Insert(list.end(), 3);
 
 		// キーの指定なしでソート
-		list.Sort(list.begin(), list.end(), nullptr);
+		list.Sort(nullptr);
 	}
-	//*/
 }
-
-#endif

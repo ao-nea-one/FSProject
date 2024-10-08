@@ -35,6 +35,9 @@
     <ClInclude Include="ScoreManager.h">
       <Filter>課題\01</Filter>
     </ClInclude>
+    <ClInclude Include="ScoreInfo.h">
+      <Filter>課題\01</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="List.inl">
