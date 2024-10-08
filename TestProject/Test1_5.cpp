@@ -446,14 +446,3 @@ namespace No01_05_StackAndQueue {
 		}
 	}
 }
-
-
-
-/// <summary>
-/// テスト項目　　：
-/// 想定する戻り値：
-/// 意図する結果　：
-/// </summary>
-TEST(GetDataNum, ID00_) {
-
-}
