@@ -94,7 +94,7 @@ typename List<T>::ConstIterator List<T>::ConstIterator::operator=(const List<T>:
 
 
 template<class T>
-bool List<T>::ConstIterator::operator==(List<T>::ConstIterator &iter) const {
+bool List<T>::ConstIterator::operator==(const List<T>::ConstIterator &iter) const {
 	return pNode == iter.pNode;
 }
 
@@ -103,7 +103,7 @@ bool List<T>::ConstIterator::operator==(List<T>::ConstIterator &iter) const {
 
 
 template<class T>
-bool List<T>::ConstIterator::operator!=(List<T>::ConstIterator &iter) const {
+bool List<T>::ConstIterator::operator!=(const List<T>::ConstIterator &iter) const {
 	return !(*this == iter);
 }
 
@@ -318,8 +318,8 @@ void List<T>::Sort(Iterator first, Iterator last, std::function<bool(T &, T &)> 
 	Iterator pivot = first;
 	Iterator tmp;
 
+	// https://bi.biopapyrus.jp/cpp/algorithm/sort/quick-sort.html
 	// 先頭側と末尾側でデータを分割をする
-
 	for (auto i = ++Iterator(first); i != last; ++i) {
 		// もし基準値と比較した結果当てはまらなければ、先頭側に移動
 		if (func(*i, *pivot)) {
@@ -364,7 +364,7 @@ typename List<T>::Iterator List<T>::end(void) {
 
 template<class T>
 typename List<T>::ConstIterator List<T>::begin(void) const {
-	return ConstIterator(dummy.pNext, this);
+	return cbegin();
 }
 
 
@@ -373,7 +373,7 @@ typename List<T>::ConstIterator List<T>::begin(void) const {
 
 template<class T>
 typename List<T>::ConstIterator List<T>::end(void) const {
-	return ConstIterator(&dummy, this);
+	return cend();
 }
 
 

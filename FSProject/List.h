@@ -100,9 +100,9 @@ public:
 
 		ConstIterator operator=(const ConstIterator &iter);
 
-		bool operator==(ConstIterator &iter) const;
+		bool operator==(const ConstIterator &iter) const;
 
-		bool operator!=(ConstIterator &iter) const;
+		bool operator!=(const ConstIterator &iter) const;
 	};
 
 	/// <summary>
