@@ -99,10 +99,12 @@
     <ClInclude Include="ManualTest1_2.h" />
     <ClInclude Include="ManualTest1_4.h" />
     <ClInclude Include="ManualTest1_5.h" />
+    <ClInclude Include="ManualTest1_6.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ManualTest1_5.cpp" />
+    <ClCompile Include="ManualTest1_6.cpp" />
     <ClCompile Include="Test1_5.cpp" />
     <ClCompile Include="ManualTest1_2.cpp" />
     <ClCompile Include="ManualTest1_4.cpp" />
