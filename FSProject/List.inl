@@ -201,6 +201,7 @@ bool List<T>::Insert(List<T>::ConstIterator iter, const T &value) {
 
 
 
+
 template<class T>
 bool List<T>::Remove(List<T>::ConstIterator iter) {
 	// nullチェック
@@ -237,7 +238,7 @@ void List<T>::Sort(std::function<bool(T &, T &)> compFunc) {
 	// 要素がないなら何もしない
 	if (count == 0) return;
 
-	Sort(begin(), 0, --end(), GetCount() - 1, compFunc);
+	Sort(begin(), --end(), compFunc);
 }
 
 
@@ -314,12 +315,11 @@ void List<T>::Leave(Iterator thisIter) {
 
 
 template<class T>
-void List<T>::Sort(Iterator first, int fstIdx, Iterator last, int lstIdx, std::function<bool(T &a, T &b)>compFunc) {
-	if (fstIdx < lstIdx) {
-		Iterator pvtIter;
-		int pvtIdx = Partition(first, fstIdx, last, lstIdx, compFunc, pvtIter);
-		if (0 < pvtIdx) Sort(first, fstIdx, --Iterator(pvtIter), pvtIdx - 1, compFunc);
-		if (pvtIdx < lstIdx) Sort(++Iterator(pvtIter), pvtIdx + 1, last, lstIdx, compFunc);
+void List<T>::Sort(Iterator first, Iterator last, std::function<bool(T &a, T &b)>compFunc) {
+	if (first != last && ++Iterator(last) != first) {
+		Iterator pvtIter = Partition(first, last, compFunc);
+		if (begin() != pvtIter) Sort(first, --Iterator(pvtIter), compFunc);
+		if (--end() != pvtIter) Sort(++Iterator(pvtIter), last, compFunc);
 	}
 }
 
@@ -328,25 +328,23 @@ void List<T>::Sort(Iterator first, int fstIdx, Iterator last, int lstIdx, std::f
 
 
 template<class T>
-int List<T>::Partition(Iterator first, int fstIdx, Iterator last, int lstIdx, std::function<bool(T &a, T &b)>compFunc, Iterator &outPvtIter) {
+typename List<T>::Iterator List<T>::Partition(Iterator first, Iterator last, std::function<bool(T &a, T &b)>compFunc) {
 	T &pivot = *last;	// 基準値
 	auto i = first;
-	int idx = fstIdx;
 
 	// https://bi.biopapyrus.jp/cpp/algorithm/sort/quick-sort.html
 	// 基準値を元に先頭側と末尾側に値を分別する
 	for (auto j = first; j != last; ++j) {
 		if (compFunc(*j, pivot)) {
 			Swap(i, j);
-			++i; ++idx;
+			++i;;
 		}
 	}
 	// 基準値をiに持ってくる
 	Swap(i, last);
 
-	// 基準値のイテレータとインデックスを返す
-	outPvtIter = i;
-	return idx;
+	// 基準値のイテレータを返す
+	return i;
 }
 
 
