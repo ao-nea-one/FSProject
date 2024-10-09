@@ -32,12 +32,12 @@ bool Dictionary<K, V, BUCKET_SIZE, HASH>::Insert(const K &key, const V &value) {
 
 
 template<class K, class V, unsigned int BUCKET_SIZE, size_t(*HASH)(const K &)>
-bool Dictionary<K, V, BUCKET_SIZE, HASH>::Find(const K &key, V &outValue) {
+bool Dictionary<K, V, BUCKET_SIZE, HASH>::Find(const K &key, V &outValue) const {
 	unsigned int idx = HASH(key) % BUCKET_SIZE;
 
 
-	List<Pair> &list = bucket[idx];
-	typename List<Pair>::Iterator iter;
+	const List<Pair> &list = bucket[idx];
+	typename List<Pair>::ConstIterator iter;
 
 
 	// ’l‚ª‘¶İ‚·‚é‚©’²‚×‚é

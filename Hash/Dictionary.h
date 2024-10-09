@@ -71,7 +71,7 @@ public:
 	/// true:ŒŸõ¬Œ÷
 	/// false:ŒŸõ¸”s
 	/// </returns>
-	bool Find(const K &key, V& outValue);
+	bool Find(const K &key, V& outValue) const;
 
 	/// <summary>
 	/// íœ

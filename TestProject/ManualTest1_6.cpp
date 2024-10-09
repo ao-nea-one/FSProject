@@ -57,16 +57,49 @@ TEST(StackGetDataNum, ID12_Const) {
 
 
 
-#ifdef ID12_HASH_NO_COMPILE_ERROR_CHECK
+#ifdef ID18_HASH_COMPILE_ERROR_CHECK
 
 /// <summary>
 /// テスト項目　　：非constのメソッドであるか
 /// 補足　　　　　：constのリストから呼び出して、コンパイルエラーとなるかをチェック。自動テスト化しなくてよい。
 /// </summary>
-TEST(StackGetDataNum, ID12_Const) {
+TEST(StackInvert, ID18_Const) {
 	const Dictionary<std::string, int, 2, Hash> dic;
 
-	dic.GetCount();
+	dic.Insert("A", 0);
+}
+
+#endif
+
+
+
+#ifdef ID26_HASH_COMPILE_ERROR_CHECK
+
+/// <summary>
+/// テスト項目　　：非constのメソッドであるか
+/// 補足　　　　　：constのリストから呼び出して、コンパイルエラーとなるかをチェック。自動テスト化しなくてよい。
+/// </summary>
+TEST(StackRemove, ID18_Const) {
+	const Dictionary<std::string, int, 2, Hash> dic;
+
+	dic.Remove("A");
+}
+
+#endif
+
+
+
+#ifdef ID34_HASH_NO_COMPILE_ERROR_CHECK
+
+/// <summary>
+/// テスト項目　　：constメソッドであるか
+/// 補足　　　　　：constのリストから呼び出して、コンパイルエラーとならないかをチェック。自動テスト化しなくてよい。
+/// </summary>
+TEST(StackFind, ID34_Const) {
+	const Dictionary<std::string, int, 2, Hash> dic;
+	int tmp = -1;
+
+	dic.Find("A", tmp);
 }
 
 #endif
