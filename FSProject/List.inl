@@ -323,19 +323,22 @@ void List<T>::Sort(Iterator first, Iterator last, std::function<bool(T &, T &)> 
 	for (auto i = ++Iterator(first); i != last; ++i) {
 		// もし基準値と比較した結果当てはまらなければ、先頭側に移動
 		if (func(*i, *pivot)) {
-			tmp = i--;
-
-			// 先頭へ移動
-			Leave(tmp);
-			Link(first, tmp);
-
-			// 先頭イテレータを更新
-			first = tmp;
+			Swap(first, i);
 		}
 	}
 
 	if (first != pivot) Sort(first, pivot, func);
 	if (last != pivot) Sort(++Iterator(pivot), last, func);
+}
+
+
+
+
+
+template<class T>
+void List<T>::Swap(Iterator &a, Iterator &b) {
+	// スワップさせる
+	std::swap(a.pNode->value, b.pNode->value);
 }
 
 

@@ -231,6 +231,13 @@ private:
 	/// </summary>
 	/// <param name="func">ソート時の関数</param>
 	void Sort(Iterator first, Iterator last, std::function<bool(T &, T &)> func);
+	
+	/// <summary>
+	/// スワップ
+	/// </summary>
+	/// <param name="a">第2引数の値と入れ替える</param>
+	/// <param name="b">第1引数の値と入れ替える</param>
+	void Swap(Iterator &a, Iterator &b);
 
 
 
