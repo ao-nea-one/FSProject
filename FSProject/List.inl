@@ -231,8 +231,13 @@ bool List<T>::Remove(List<T>::ConstIterator iter) {
 
 
 template<class T>
-void List<T>::Sort(std::function<bool(T &, T &)> func) {
-	Sort(begin(), end(), func);
+void List<T>::Sort(std::function<bool(T &, T &)> compFunc) {
+	// nullチェック
+	if (compFunc == nullptr) return;
+	// 要素がないなら何もしない
+	if (count == 0) return;
+
+	Sort(begin(), 0, --end(), GetCount() - 1, compFunc);
 }
 
 
@@ -309,26 +314,39 @@ void List<T>::Leave(Iterator thisIter) {
 
 
 template<class T>
-void List<T>::Sort(Iterator first, Iterator last, std::function<bool(T &, T &)> func) {
-	// nullチェック
-	if (func == nullptr) return;
+void List<T>::Sort(Iterator first, int fstIdx, Iterator last, int lstIdx, std::function<bool(T &a, T &b)>compFunc) {
+	if (fstIdx < lstIdx) {
+		Iterator pvtIter;
+		int pvtIdx = Partition(first, fstIdx, last, lstIdx, compFunc, pvtIter);
+		if (0 < pvtIdx) Sort(first, fstIdx, --Iterator(pvtIter), pvtIdx - 1, compFunc);
+		if (pvtIdx < lstIdx) Sort(++Iterator(pvtIter), pvtIdx + 1, last, lstIdx, compFunc);
+	}
+}
 
-	if (first == last || first == --Iterator(last)) return;
 
-	Iterator pivot = first;
-	Iterator tmp;
+
+
+
+template<class T>
+int List<T>::Partition(Iterator first, int fstIdx, Iterator last, int lstIdx, std::function<bool(T &a, T &b)>compFunc, Iterator &outPvtIter) {
+	T &pivot = *last;	// 基準値
+	auto i = first;
+	int idx = fstIdx;
 
 	// https://bi.biopapyrus.jp/cpp/algorithm/sort/quick-sort.html
-	// 先頭側と末尾側でデータを分割をする
-	for (auto i = ++Iterator(first); i != last; ++i) {
-		// もし基準値と比較した結果当てはまらなければ、先頭側に移動
-		if (func(*i, *pivot)) {
-			Swap(first, i);
+	// 基準値を元に先頭側と末尾側に値を分別する
+	for (auto j = first; j != last; ++j) {
+		if (compFunc(*j, pivot)) {
+			Swap(i, j);
+			++i; ++idx;
 		}
 	}
+	// 基準値をiに持ってくる
+	Swap(i, last);
 
-	if (first != pivot) Sort(first, pivot, func);
-	if (last != pivot) Sort(++Iterator(pivot), last, func);
+	// 基準値のイテレータとインデックスを返す
+	outPvtIter = i;
+	return idx;
 }
 
 
@@ -337,8 +355,9 @@ void List<T>::Sort(Iterator first, Iterator last, std::function<bool(T &, T &)> 
 
 template<class T>
 void List<T>::Swap(Iterator &a, Iterator &b) {
-	// スワップさせる
-	std::swap(a.pNode->value, b.pNode->value);
+	auto tmp = std::move(a.pNode->value);
+	a.pNode->value = std::move(b.pNode->value);
+	b.pNode->value = std::move(tmp);
 }
 
 
