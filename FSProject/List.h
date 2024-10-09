@@ -230,23 +230,18 @@ private:
 	/// ソート
 	/// </summary>
 	/// <param name="first">先頭イテレータ</param>
-	/// <param name="fstIdx">先頭のインデックス</param>
 	/// <param name="last">末尾イテレータ</param>
-	/// <param name="lstIdx">末尾のインデックス</param>
 	/// <param name="compFunc">比較する関数</param>
-	void Sort(Iterator first, int fstIdx, Iterator last, int lstIdx, std::function<bool(T &a, T &b)>compFunc);
+	void Sort(Iterator first, Iterator last, std::function<bool(T &a, T &b)>compFunc);
 
 	/// <summary>
 	/// ソート
 	/// </summary>
 	/// <param name="first">先頭イテレータ</param>
-	/// <param name="fstIdx">先頭のインデックス</param>
 	/// <param name="last">末尾イテレータ</param>
-	/// <param name="lstIdx">末尾のインデックス</param>
 	/// <param name="compFunc">比較する関数</param>
 	/// <param name="outPvtIter">ピボットのイテレータ</param>
-	/// <returns>ピボットのインデックス</returns>
-	int Partition(Iterator first, int fstIdx, Iterator last, int lstIdx, std::function<bool(T &a, T &b)>compFunc, Iterator &outPvtIter);
+	Iterator Partition(Iterator first, Iterator last, std::function<bool(T &a, T &b)>compFunc);
 	
 	/// <summary>
 	/// スワップ
