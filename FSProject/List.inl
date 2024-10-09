@@ -329,20 +329,24 @@ void List<T>::Sort(Iterator first, int fstIdx, Iterator last, int lstIdx, std::f
 
 template<class T>
 int List<T>::Partition(Iterator first, int fstIdx, Iterator last, int lstIdx, std::function<bool(T &a, T &b)>compFunc, Iterator &outPvtIter) {
-	T &pivot = *last;
+	T &pivot = *last;	// 基準値
 	auto i = first;
-	int pvtIdx = fstIdx;
+	int idx = fstIdx;
 
+	// https://bi.biopapyrus.jp/cpp/algorithm/sort/quick-sort.html
+	// 基準値を元に先頭側と末尾側に値を分別する
 	for (auto j = first; j != last; ++j) {
 		if (compFunc(*j, pivot)) {
 			Swap(i, j);
-			++i; ++pvtIdx;
+			++i; ++idx;
 		}
 	}
+	// 基準値をiに持ってくる
 	Swap(i, last);
 
+	// 基準値のイテレータとインデックスを返す
 	outPvtIter = i;
-	return pvtIdx;
+	return idx;
 }
 
 
