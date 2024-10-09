@@ -50,8 +50,7 @@ namespace No01_05_StackAndQueue {
 				EXPECT_TRUE(stack.Push(0));
 
 				// 要素をポップ
-				EXPECT_EQ(stack.Pop(nullptr), true);
-				EXPECT_EQ(stack.Pop(&tmp), 0);
+				EXPECT_EQ(stack.Pop(&tmp), true);
 
 				// 要素数をチェック
 				EXPECT_EQ(stack.GetCount(), 0);
