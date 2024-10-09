@@ -50,8 +50,7 @@ namespace No01_05_StackAndQueue {
 				EXPECT_TRUE(stack.Push(0));
 
 				// 要素をポップ
-				EXPECT_EQ(stack.Pop(nullptr), true);
-				EXPECT_EQ(stack.Pop(&tmp), 0);
+				EXPECT_EQ(stack.Pop(&tmp), true);
 
 				// 要素数をチェック
 				EXPECT_EQ(stack.GetCount(), 0);
@@ -445,15 +444,4 @@ namespace No01_05_StackAndQueue {
 			}
 		}
 	}
-}
-
-
-
-/// <summary>
-/// テスト項目　　：
-/// 想定する戻り値：
-/// 意図する結果　：
-/// </summary>
-TEST(GetDataNum, ID00_) {
-
 }

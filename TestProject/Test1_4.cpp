@@ -28,24 +28,24 @@ namespace No01_04_QuickSort {
 
 	auto COMP_HP_ASC = [](Player &a, Player &b) { return a.hp < b.hp; };
 	auto COMP_HP_DESC = [](Player &a, Player &b) { return a.hp > b.hp; };
-	auto COMP_HP_EQ = [](Player &a, int &b) { return a.hp == b; };
+	auto COMP_HP_EQ = [](const Player &a, const int &b) { return a.hp == b; };
 	auto COMP_WEIGHT_ASC = [](Player &a, Player &b) { return a.weight < b.weight; };
 	auto COMP_WEIGHT_DESC = [](Player &a, Player &b) { return a.weight > b.weight; };
-	auto COMP_WEIGHT_EQ = [](Player &a, float &b) { return a.weight == b; };
+	auto COMP_WEIGHT_EQ = [](const Player &a, const float &b) { return a.weight == b; };
 
 	/// <summary>
 	/// HPの値が順番通りか比較する
 	/// </summary>
-	/// <param name="list"></param>
-	/// <param name="expectedParams"></param>
-	/// <param name="compEQ"></param>
-	void CheckEQElementHP(List<Player> &list, std::vector<int> expectedParams, std::function<bool(Player &, int &)> compEQ) {
+	/// <param name="list">リスト</param>
+	/// <param name="expectedParams">期待する値の配列</param>
+	/// <param name="compEQ">一致するか比較する式</param>
+	void CheckEQElementHP(const List<Player> &list, std::vector<int> expectedParams, std::function<bool(const Player &, const int &)> compEQ) {
 		// 要素数が同じでないなら実行しない
 		ASSERT_EQ(list.GetCount(), expectedParams.size());
 
 		// イテレータを使用してすべての要素をチェック
 		auto it = list.begin();
-		auto expectedIt = expectedParams.begin();
+		auto expectedIt = expectedParams.cbegin();
 
 		while (it != list.end() && expectedIt != expectedParams.end()) {
 			// 値をチェック
@@ -60,10 +60,10 @@ namespace No01_04_QuickSort {
 	/// <summary>
 	/// weightの値が順番通りか比較する
 	/// </summary>
-	/// <param name="list"></param>
-	/// <param name="expectedParams"></param>
-	/// <param name="compEQ"></param>
-	void CheckEQElementWeight(List<Player> &list, std::vector<float> expectedParams, std::function<bool(Player &, float &)> compEQ) {
+	/// <param name="list">リスト</param>
+	/// <param name="expectedParams">期待する値の配列</param>
+	/// <param name="compEQ">一致するか比較する式</param>
+	void CheckEQElementWeight(const List<Player> &list, std::vector<float> expectedParams, std::function<bool(const Player &, const float &)> compEQ) {
 		// 要素数が同じでないなら実行しない
 		ASSERT_EQ(list.GetCount(), expectedParams.size());
 
