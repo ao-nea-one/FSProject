@@ -20,6 +20,7 @@
     <ClCompile Include="ManualTest1_5.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="Test1_6.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

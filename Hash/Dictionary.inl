@@ -3,43 +3,79 @@
 
 /*--- メンバー関数 ---*/
 
-template<class K, class V>
-bool Dictionary<K, V>::Insert(const K &key, const V &value) {
-	//size_t hashValue = std::hash<K>()(key);
-	//unsigned int idx = hashValue % BUCKET_SIZE;
+template<class K, class V, unsigned int BUCKET_SIZE, size_t(*HASH)(const K &)>
+bool Dictionary<K, V, BUCKET_SIZE, HASH>::Insert(const K &key, const V &value) {
+	unsigned int idx = HASH(key) % BUCKET_SIZE;
 
 
-	//List<Pair> list;// = List<Pair>::bucket[idx];
-	//List<Pair>::ConstIterator iter = list.begin();
+	List<Pair> &list = bucket[idx];
+	typename List<Pair>::Iterator iter;
 
-	//
-	//for (; (*iter).key == key && iter != list.cend(); ++iter);
+	
+	// 値が存在するか調べる
+	for (iter = list.begin(); iter != list.cend() && (*iter).key != key; ++iter);
 
-	////
-	//if (iter != list.cend()) {
-	//	(*iter).value = value;
-	//	return true;
-	//}
-	//else return Dictionary<K, V>::bucket[idx].Insert(Pair(key, value));
-
-	List<V> list;
-	List<typename V>::Iterator;
-	auto iter = list.cbegin();
-	bool is = iter == list.cbegin();
-
-	return true;
+	// 値が存在しないなら追加
+	if (iter == list.cend()) {
+		// 挿入成功なら要素数のカウントアップ
+		if (list.Insert(list.end(), Pair(key, value))) {
+			count++;
+			return true;
+		}
+	}
+	// 要素が存在する
+	return false;
 }
 
 
 
 
 
-template<class K, class V>
-V &Dictionary<K, V>::Find(const K &key) {
-	size_t hashValue = std::hash<K>()(key);
-	unsigned int idx = hashValue % BUCKET_SIZE;
+template<class K, class V, unsigned int BUCKET_SIZE, size_t(*HASH)(const K &)>
+bool Dictionary<K, V, BUCKET_SIZE, HASH>::Find(const K &key, V &outValue) {
+	unsigned int idx = HASH(key) % BUCKET_SIZE;
 
 
-	//Dictionary<K, V>::bucket[idx].Insert(Pair(key, value));
-	return V();
+	List<Pair> &list = bucket[idx];
+	typename List<Pair>::Iterator iter;
+
+
+	// 値が存在するか調べる
+	for (iter = list.begin(); iter != list.cend() && (*iter).key != key; ++iter);
+
+	// 値が存在する
+	if (iter != list.cend()) {
+		outValue = (*iter).value;
+		return true;
+	}
+	// 値が存在しない
+	else return false;
+}
+
+
+
+
+
+template<class K, class V, unsigned int BUCKET_SIZE, size_t(*HASH)(const K &)>
+bool Dictionary<K, V, BUCKET_SIZE, HASH>::Remove(const K &key) {
+	unsigned int idx = HASH(key) % BUCKET_SIZE;
+
+
+	List<Pair> &list = bucket[idx];
+	typename List<Pair>::Iterator iter;
+
+
+	// 値が存在するか調べる
+	for (iter = list.begin(); iter != list.cend() && (*iter).key != key; ++iter);
+
+	// 値が存在するなら削除
+	if (iter != list.cend()) {
+		// 削除成功なら要素数のカウントダウン
+		if (list.Remove(iter)) {
+			count--;
+			return true;
+		}
+	}
+	// 値が存在しない
+	return false;
 }

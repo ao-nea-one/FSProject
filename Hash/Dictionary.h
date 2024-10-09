@@ -18,7 +18,7 @@
 /// <summary>
 /// リストクラス
 /// </summary>
-template<class K, class V>
+template<class K, class V, unsigned int BUCKET_SIZE, size_t (*HASH)(const K&)>
 class Dictionary {
 private:
 	/*--- インナークラス ---*/
@@ -43,8 +43,8 @@ private:
 private:
 	/*--- メンバー変数 ---*/
 
-	unsigned int BUCKET_SIZE = 10;
 	std::vector<List<Pair>> bucket = std::vector<List<Pair>>(BUCKET_SIZE);
+	unsigned int count = 0;	// 全てのリスト内の要素数
 
 
 
@@ -66,8 +66,28 @@ public:
 	/// 検索
 	/// </summary>
 	/// <param name="key">検索するキー</param>
-	/// <returns>キーに対応する値</returns>
-	V &Find(const K &key);
+	/// <param name="outValue">キーに対応する値を返す</param>
+	/// <returns>
+	/// true:検索成功
+	/// false:検索失敗
+	/// </returns>
+	bool Find(const K &key, V& outValue);
+
+	/// <summary>
+	/// 削除
+	/// </summary>
+	/// <param name="key">削除するキー</param>
+	/// <returns>
+	/// true:削除成功
+	/// false:削除失敗
+	/// </returns>
+	bool Remove(const K &key);
+
+	/// <summary>
+	/// 要素数を取得
+	/// </summary>
+	/// <returns>要素数</returns>
+	unsigned int GetCount(void) const { return count; }
 };
 
 #include "Dictionary.inl"
