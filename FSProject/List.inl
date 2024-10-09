@@ -318,8 +318,8 @@ template<class T>
 void List<T>::Sort(Iterator first, Iterator last, std::function<bool(T &a, T &b)>compFunc) {
 	if (first != last && ++Iterator(last) != first) {
 		Iterator pvtIter = Partition(first, last, compFunc);
-		if (begin() != pvtIter) Sort(first, --Iterator(pvtIter), compFunc);
-		if (--end() != pvtIter) Sort(++Iterator(pvtIter), last, compFunc);
+		if (first != pvtIter) Sort(first, --Iterator(pvtIter), compFunc);
+		if (last != pvtIter) Sort(++Iterator(pvtIter), last, compFunc);
 	}
 }
 
@@ -337,7 +337,7 @@ typename List<T>::Iterator List<T>::Partition(Iterator first, Iterator last, std
 	for (auto j = first; j != last; ++j) {
 		if (compFunc(*j, pivot)) {
 			Swap(i, j);
-			++i;;
+			++i;
 		}
 	}
 	// Šî€’l‚ği‚É‚Á‚Ä‚­‚é
