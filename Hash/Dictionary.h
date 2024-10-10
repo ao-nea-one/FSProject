@@ -100,12 +100,6 @@ public:
 	/// </summary>
 	/// <returns>要素数</returns>
 	unsigned int GetCount(void) const;
-
-	/// <summary>
-	/// チェインを取得
-	/// </summary>
-	/// <returns>要素数</returns>
-	const List<Pair> &GetChain(unsigned int idx) const;
 };
 
 #include "Dictionary.inl"

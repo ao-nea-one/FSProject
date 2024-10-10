@@ -97,15 +97,3 @@ template<class K, class V, unsigned int BUCKET_SIZE, size_t(*HASH)(const K &)>
 unsigned int Dictionary<K, V, BUCKET_SIZE, HASH>::GetCount(void) const {
 	return count;
 }
-
-
-
-
-
-template<class K, class V, unsigned int BUCKET_SIZE, size_t(*HASH)(const K &)>
-const List<typename Dictionary<K, V, BUCKET_SIZE, HASH>::Pair> &
-Dictionary<K, V, BUCKET_SIZE, HASH>::GetChain(unsigned int idx) const {
-	assert(idx < bucket.size());
-
-	return bucket[idx];
-}
