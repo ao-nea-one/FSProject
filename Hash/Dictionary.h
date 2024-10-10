@@ -88,7 +88,7 @@ public:
 	/// </summary>
 	/// <param name="key">キー</param>
 	/// <returns>ハッシュの値</returns>
-	unsigned int CalcHash(const K &key);
+	unsigned int CalcHash(const K &key) const;
 
 
 

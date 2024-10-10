@@ -85,7 +85,7 @@ bool Dictionary<K, V, BUCKET_SIZE, HASH>::Remove(const K &key) {
 
 
 template<class K, class V, unsigned int BUCKET_SIZE, size_t(*HASH)(const K &)>
-unsigned int Dictionary<K, V, BUCKET_SIZE, HASH>::CalcHash(const K &key) {
+unsigned int Dictionary<K, V, BUCKET_SIZE, HASH>::CalcHash(const K &key) const {
 	return HASH(key) % BUCKET_SIZE;
 }
 
