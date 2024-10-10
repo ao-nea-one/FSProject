@@ -5,7 +5,7 @@
 
 template<class K, class V, unsigned int BUCKET_SIZE, size_t(*HASH)(const K &)>
 bool Dictionary<K, V, BUCKET_SIZE, HASH>::Insert(const K &key, const V &value) {
-	unsigned int idx = HASH(key) % BUCKET_SIZE;
+	unsigned int idx = CalcHash(key);
 
 
 	List<Pair> &list = bucket[idx];
@@ -33,7 +33,7 @@ bool Dictionary<K, V, BUCKET_SIZE, HASH>::Insert(const K &key, const V &value) {
 
 template<class K, class V, unsigned int BUCKET_SIZE, size_t(*HASH)(const K &)>
 bool Dictionary<K, V, BUCKET_SIZE, HASH>::Find(const K &key, V &outValue) const {
-	unsigned int idx = HASH(key) % BUCKET_SIZE;
+	unsigned int idx = CalcHash(key);
 
 
 	const List<Pair> &list = bucket[idx];
@@ -58,7 +58,7 @@ bool Dictionary<K, V, BUCKET_SIZE, HASH>::Find(const K &key, V &outValue) const 
 
 template<class K, class V, unsigned int BUCKET_SIZE, size_t(*HASH)(const K &)>
 bool Dictionary<K, V, BUCKET_SIZE, HASH>::Remove(const K &key) {
-	unsigned int idx = HASH(key) % BUCKET_SIZE;
+	unsigned int idx = CalcHash(key);
 
 
 	List<Pair> &list = bucket[idx];
