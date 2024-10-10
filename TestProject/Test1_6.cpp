@@ -26,6 +26,39 @@ namespace No01_06_Hash {
 		return key.size();
 	}
 
+	/// <summary>
+	/// 値が存在し、期待する値と同じかチェックする
+	/// </summary>
+	/// <param name="dic">ハッシュテーブル</param>
+	/// <param name="hasKey">キーが存在するか</param>
+	/// <param name="key">キー</param>
+	/// <param name="value">期待する値　キーがない場合 -1</param>
+	/// <returns>
+	/// true:hasKey と valueが想定する値
+	/// false:hasKey と valueが想定しない値
+	/// </returns>
+	bool KeyValueCheck(const Dictionary<std::string, int, 2, Hash> &dic, bool hasKey, const std::string &key, const int& value) {
+		int tmp = -1;
+
+		return dic.Find(key, tmp) == hasKey && tmp == value;
+	}
+
+	/// <summary>
+	/// チェイン内の値をチェックする
+	/// </summary>
+	/// <param name="list">リスト</param>
+	/// <param name="expectedParams">期待する値</param>
+	void ChainCheck(const List<Dictionary<std::string, int, 2, Hash>::Pair> &list, const std::vector<int> &expectedParams) {
+		// サイズが不一致なら終了
+		ASSERT_EQ(list.GetCount(), expectedParams.size());
+
+		int i = 0;
+		for (const Dictionary<std::string, int, 2, Hash>::Pair &p : list) {
+			ASSERT_EQ(p.value, expectedParams[i]);
+			++i;
+		}
+	}
+
 
 
 
@@ -36,7 +69,7 @@ namespace No01_06_Hash {
 		/// テスト項目　　：算出方法の異なる適切なハッシュ関数を渡したときのそれぞれの挙動
 		/// 補足　　　　　：挿入、検索、削除を行い、全ての戻り値がTRUEになるかチェック
 		/// </summary>
-		TEST(StackGetDataNum, ID01_GetEmpty) {
+		TEST(HashClass, ID01_HashFunc) {
 			Dictionary<std::string, int, 2, Hash> dicA;
 			Dictionary<std::string, int, 2, HashByLength> dicB;
 
@@ -48,10 +81,20 @@ namespace No01_06_Hash {
 			int a = -1, b = -1;
 			EXPECT_TRUE(dicA.Find("A", a));
 			EXPECT_TRUE(dicB.Find("B", b));
+			EXPECT_EQ(a, 0);
+			EXPECT_EQ(b, 1);
+
 
 			// 要素を削除
 			EXPECT_TRUE(dicA.Remove("A"));
 			EXPECT_TRUE(dicB.Remove("B"));
+
+			// 再度検索
+			a = -1, b = -1;
+			EXPECT_FALSE(dicA.Find("A", a));
+			EXPECT_FALSE(dicB.Find("B", b));
+			EXPECT_EQ(a, -1);
+			EXPECT_EQ(b, -1);
 		}
 	}
 
@@ -78,12 +121,13 @@ namespace No01_06_Hash {
 		/// </summary>
 		TEST(HashGetDataNum, ID03_Insert) {
 			Dictionary<std::string, int, 2, Hash> dic;
+			int tmp = -1;
 
 			// 挿入
 			EXPECT_TRUE(dic.Insert("A", 0));
 
 			// 要素数をチェック
-			EXPECT_EQ(dic.GetCount(), 1);
+			EXPECT_TRUE(KeyValueCheck(dic, true, "A", 0));
 		}
 
 		/// <summary>
@@ -92,15 +136,21 @@ namespace No01_06_Hash {
 		/// </summary>
 		TEST(HashGetDataNum, ID04_InsertAndRemove) {
 			Dictionary<std::string, int, 2, Hash> dic;
+			int tmp = -1;
 
 			// 挿入
 			EXPECT_TRUE(dic.Insert("A", 0));
+
+			// 要素数をチェック
+			EXPECT_TRUE(KeyValueCheck(dic, true, "A", 0));
+
+
 
 			// 削除
 			EXPECT_TRUE(dic.Remove("A"));
 
 			// 要素数をチェック
-			EXPECT_EQ(dic.GetCount(), 0);
+			EXPECT_TRUE(KeyValueCheck(dic, false, "A", -1));
 		}
 
 		/// <summary>
@@ -109,16 +159,18 @@ namespace No01_06_Hash {
 		/// 補足　　　　　：１回挿入した後、そのキーで再度挿入する
 		/// </summary>
 		TEST(HashGetDataNum, ID05_InsertTwice) {
-			// メモリリーク以外挿入に失敗することがないので、スキップ
+			Dictionary<std::string, int, 2, Hash> dic;
+			int tmp = -1;
 
-			//Dictionary<std::string, int, 2, Hash> dic;
+			// 挿入
+			EXPECT_TRUE(dic.Insert("A", 0));
+			EXPECT_TRUE(KeyValueCheck(dic, true, "A", 0));
 
-			//// 挿入
-			//EXPECT_TRUE(dic.Insert("A", 0));
-			//EXPECT_FALSE(dic.Insert("A", 0));
+			EXPECT_FALSE(dic.Insert("A", 1));
+			EXPECT_TRUE(KeyValueCheck(dic, true, "A", 0));
 
-			//// 要素数をチェック
-			//EXPECT_EQ(dic.GetCount(), 1);
+			// 要素数をチェック
+			EXPECT_EQ(dic.GetCount(), 1);
 		}
 
 		/// <summary>
@@ -131,9 +183,13 @@ namespace No01_06_Hash {
 
 			// 挿入
 			EXPECT_TRUE(dic.Insert("A", 0));
+			EXPECT_TRUE(KeyValueCheck(dic, true, "A", 0));
+			EXPECT_TRUE(KeyValueCheck(dic, false, "B", -1));
 
 			// 削除
 			EXPECT_FALSE(dic.Remove("B"));
+			EXPECT_TRUE(KeyValueCheck(dic, true, "A", 0));
+			EXPECT_TRUE(KeyValueCheck(dic, false, "B", -1));
 
 			// 要素数をチェック
 			EXPECT_EQ(dic.GetCount(), 1);
@@ -148,6 +204,7 @@ namespace No01_06_Hash {
 
 			// 削除
 			EXPECT_FALSE(dic.Remove("A"));
+			EXPECT_TRUE(KeyValueCheck(dic, false, "A", -1));
 
 			// 要素数をチェック
 			EXPECT_EQ(dic.GetCount(), 0);
@@ -162,9 +219,20 @@ namespace No01_06_Hash {
 			Dictionary<std::string, int, 2, Hash> dic;
 
 			// 挿入
-			EXPECT_NE(Hash("A") % 2, Hash("B") % 2);
-			EXPECT_TRUE(dic.Insert("A", 0));
-			EXPECT_TRUE(dic.Insert("B", 0));
+			EXPECT_NE(dic.CalcHash("A"), dic.CalcHash("B"));
+			EXPECT_TRUE(dic.Insert("A", 0)); // チェイン0
+			EXPECT_TRUE(dic.Insert("B", 1)); // チェイン1
+
+
+
+			// チェイン0
+			ChainCheck(dic.GetChain(0), { 0 });
+			EXPECT_FALSE(HasFatalFailure());
+			// チェイン1
+			ChainCheck(dic.GetChain(1), { 1 });
+			EXPECT_FALSE(HasFatalFailure());
+
+
 
 			// 要素数をチェック
 			EXPECT_EQ(dic.GetCount(), 2);
@@ -178,12 +246,33 @@ namespace No01_06_Hash {
 			Dictionary<std::string, int, 2, Hash> dic;
 
 			// 挿入
-			EXPECT_NE(Hash("A") % 2, Hash("B") % 2);
-			EXPECT_TRUE(dic.Insert("A", 0));
-			EXPECT_TRUE(dic.Insert("B", 0));
+			EXPECT_NE(dic.CalcHash("A"), dic.CalcHash("B"));
+			EXPECT_TRUE(dic.Insert("A", 0)); // チェイン0
+			EXPECT_TRUE(dic.Insert("B", 1)); // チェイン1
+
+
+
+			// チェイン0
+			ChainCheck(dic.GetChain(0), { 0 });
+			EXPECT_FALSE(HasFatalFailure());
+			// チェイン1
+			ChainCheck(dic.GetChain(1), { 1 });
+			EXPECT_FALSE(HasFatalFailure());
+
+
 
 			// 削除
-			EXPECT_TRUE(dic.Remove("A"));
+			EXPECT_TRUE(dic.Remove("A")); // チェイン0
+
+			// チェイン0
+			ChainCheck(dic.GetChain(0), { });
+			EXPECT_FALSE(HasFatalFailure());
+			// チェイン1
+			ChainCheck(dic.GetChain(1), { 1 });
+			EXPECT_FALSE(HasFatalFailure());
+
+
+
 
 			// 要素数をチェック
 			EXPECT_EQ(dic.GetCount(), 1);
@@ -198,11 +287,22 @@ namespace No01_06_Hash {
 			Dictionary<std::string, int, 2, Hash> dic;
 
 			// 挿入するチェインのインデックスをハッシュから確認する
-			EXPECT_EQ(Hash("A") % 2, Hash("C") % 2);
+			EXPECT_EQ(dic.CalcHash("A"), dic.CalcHash("C"));
 
 			// 挿入
-			EXPECT_TRUE(dic.Insert("A", 0));
-			EXPECT_TRUE(dic.Insert("C", 0));
+			EXPECT_TRUE(dic.Insert("A", 0)); // チェイン0
+			EXPECT_TRUE(dic.Insert("C", 1)); // チェイン1
+
+
+
+			// チェイン0
+			ChainCheck(dic.GetChain(0), { 0, 1 });
+			EXPECT_FALSE(HasFatalFailure());
+			// チェイン1
+			ChainCheck(dic.GetChain(1), { });
+			EXPECT_FALSE(HasFatalFailure());
+
+
 
 			// 要素数をチェック
 			EXPECT_EQ(dic.GetCount(), 2);
@@ -216,14 +316,34 @@ namespace No01_06_Hash {
 			Dictionary<std::string, int, 2, Hash> dic;
 
 			// 挿入するチェインのインデックスをハッシュから確認する
-			EXPECT_EQ(Hash("A") % 2, Hash("C") % 2);
+			EXPECT_EQ(dic.CalcHash("A"), dic.CalcHash("C"));
 
 			// 挿入
-			EXPECT_TRUE(dic.Insert("A", 0));
-			EXPECT_TRUE(dic.Insert("C", 0));
+			EXPECT_TRUE(dic.Insert("A", 0)); // チェイン0
+			EXPECT_TRUE(dic.Insert("C", 1)); // チェイン1
+
+
+
+			// チェイン0
+			ChainCheck(dic.GetChain(0), { 0, 1 });
+			EXPECT_FALSE(HasFatalFailure());
+			// チェイン1
+			ChainCheck(dic.GetChain(1), { });
+			EXPECT_FALSE(HasFatalFailure());
+
+
 
 			// 削除
-			EXPECT_TRUE(dic.Remove("A"));
+			EXPECT_TRUE(dic.Remove("A")); // チェイン0
+
+			// チェイン0
+			ChainCheck(dic.GetChain(0), { 1 });
+			EXPECT_FALSE(HasFatalFailure());
+			// チェイン1
+			ChainCheck(dic.GetChain(1), { });
+			EXPECT_FALSE(HasFatalFailure());
+
+
 
 			// 要素数をチェック
 			EXPECT_EQ(dic.GetCount(), 1);
@@ -246,6 +366,9 @@ namespace No01_06_Hash {
 
 			// 挿入
 			EXPECT_TRUE(dic.Insert("A", 0));
+
+			// 要素数をチェック
+			EXPECT_TRUE(KeyValueCheck(dic, true, "A", 0));
 		}
 
 		/// <summary>
@@ -262,6 +385,11 @@ namespace No01_06_Hash {
 
 			// 重複しないキーで挿入
 			EXPECT_TRUE(dic.Insert("C", 2));
+
+			// 要素数をチェック
+			EXPECT_TRUE(KeyValueCheck(dic, true, "A", 0));
+			EXPECT_TRUE(KeyValueCheck(dic, true, "B", 1));
+			EXPECT_TRUE(KeyValueCheck(dic, true, "C", 2));
 		}
 
 		/// <summary>
@@ -278,6 +406,11 @@ namespace No01_06_Hash {
 
 			// 重複したキーで挿入
 			EXPECT_FALSE(dic.Insert("A", 2));
+
+			// 要素数をチェック
+			EXPECT_TRUE(KeyValueCheck(dic, true, "A", 0));
+			EXPECT_TRUE(KeyValueCheck(dic, true, "B", 1));
+			EXPECT_TRUE(KeyValueCheck(dic, true, "A", 0));
 		}
 
 		/// <summary>
@@ -290,14 +423,22 @@ namespace No01_06_Hash {
 			Dictionary<std::string, int, 2, Hash> dic;
 
 			// 挿入するチェインのインデックスをハッシュから確認する
-			EXPECT_EQ(Hash("A") % 2, Hash("C") % 2);
+			EXPECT_EQ(dic.CalcHash("A"), dic.CalcHash("C"));
 
 			// 挿入
-			EXPECT_TRUE(dic.Insert("A", 0));
-			EXPECT_TRUE(dic.Insert("C", 1));
+			EXPECT_TRUE(dic.Insert("A", 0)); // チェイン0
+			EXPECT_TRUE(dic.Insert("C", 1)); // チェイン0
 
 			// 重複したキーで挿入
-			EXPECT_FALSE(dic.Insert("A", 2));
+			EXPECT_FALSE(dic.Insert("A", 2)); // チェイン0
+
+			// 要素数をチェック
+			// チェイン0
+			ChainCheck(dic.GetChain(0), { 0, 1 });
+			EXPECT_FALSE(HasFatalFailure());
+			// チェイン1
+			ChainCheck(dic.GetChain(1), { });
+			EXPECT_FALSE(HasFatalFailure());
 		}
 
 		/// <summary>
@@ -311,12 +452,22 @@ namespace No01_06_Hash {
 
 			// 挿入
 			EXPECT_TRUE(dic.Insert("A", 0));
+			// 要素数をチェック
+			EXPECT_TRUE(KeyValueCheck(dic, true, "A", 0));
+
+
 
 			// 削除
 			EXPECT_TRUE(dic.Remove("A"));
+			// 要素数をチェック
+			EXPECT_TRUE(KeyValueCheck(dic, false, "A", -1));
+
+
 
 			// 再度挿入
 			EXPECT_TRUE(dic.Insert("A", 0));
+			// 要素数をチェック
+			EXPECT_TRUE(KeyValueCheck(dic, true, "A", 0));
 		}
 	}
 
@@ -348,9 +499,15 @@ namespace No01_06_Hash {
 
 			// 挿入
 			EXPECT_TRUE(dic.Insert("A", 0));
+			// 要素数をチェック
+			EXPECT_TRUE(KeyValueCheck(dic, true, "A", 0));
+
+
 
 			// 削除
 			EXPECT_TRUE(dic.Remove("A"));
+			// 要素数をチェック
+			EXPECT_TRUE(KeyValueCheck(dic, false, "A", -1));
 		}
 
 		/// <summary>
@@ -363,9 +520,17 @@ namespace No01_06_Hash {
 
 			// 挿入
 			EXPECT_TRUE(dic.Insert("A", 0));
+			// 要素数をチェック
+			EXPECT_TRUE(KeyValueCheck(dic, true, "A", 0));
+			EXPECT_TRUE(KeyValueCheck(dic, false, "B", -1));
+
+
 
 			// 削除
 			EXPECT_FALSE(dic.Remove("B"));
+			// 要素数をチェック
+			EXPECT_TRUE(KeyValueCheck(dic, true, "A", 0));
+			EXPECT_TRUE(KeyValueCheck(dic, false, "B", -1));
 		}
 
 		/// <summary>
@@ -379,10 +544,18 @@ namespace No01_06_Hash {
 
 			// 挿入
 			EXPECT_TRUE(dic.Insert("A", 0));
+			// 要素数をチェック
+			EXPECT_TRUE(KeyValueCheck(dic, true, "A", 0));
+			EXPECT_TRUE(KeyValueCheck(dic, false, "B", -1));
+
+
 
 			// 削除
 			EXPECT_TRUE(dic.Remove("A"));
 			EXPECT_FALSE(dic.Remove("A"));
+			// 要素数をチェック
+			EXPECT_TRUE(KeyValueCheck(dic, false, "A", -1));
+			EXPECT_TRUE(KeyValueCheck(dic, false, "B", -1));
 		}
 
 		/// <summary>
@@ -394,18 +567,30 @@ namespace No01_06_Hash {
 			Dictionary<std::string, int, 2, Hash> dic;
 
 			// 挿入するチェインのインデックスをハッシュから確認する
-			EXPECT_EQ(Hash("A") % 2, Hash("C") % 2);
-			EXPECT_EQ(Hash("A") % 2, Hash("E") % 2);
+			EXPECT_EQ(dic.CalcHash("A"), dic.CalcHash("C"));
+			EXPECT_EQ(dic.CalcHash("A"), dic.CalcHash("E"));
 
 			// 挿入
-			EXPECT_TRUE(dic.Insert("A", 0));
-			EXPECT_TRUE(dic.Insert("C", 0));
-			EXPECT_TRUE(dic.Insert("E", 0));
+			EXPECT_TRUE(dic.Insert("A", 0)); // チェイン0
+			EXPECT_TRUE(dic.Insert("C", 1)); // チェイン0
+			EXPECT_TRUE(dic.Insert("E", 2)); // チェイン0
+			// チェイン0
+			ChainCheck(dic.GetChain(0), { 0, 1, 2 });
+			EXPECT_FALSE(HasFatalFailure());
+			// チェイン1
+			ChainCheck(dic.GetChain(1), { });
+			EXPECT_FALSE(HasFatalFailure());
+
+
 
 			// 削除
-			EXPECT_TRUE(dic.Remove("E"));
-			EXPECT_TRUE(dic.Remove("C"));
-			EXPECT_TRUE(dic.Remove("A"));
+			EXPECT_TRUE(dic.Remove("C")); // チェイン0
+			// チェイン0
+			ChainCheck(dic.GetChain(0), { 0, 2 });
+			EXPECT_FALSE(HasFatalFailure());
+			// チェイン1
+			ChainCheck(dic.GetChain(1), { });
+			EXPECT_FALSE(HasFatalFailure());
 		}
 
 		/// <summary>
@@ -418,15 +603,29 @@ namespace No01_06_Hash {
 			Dictionary<std::string, int, 2, Hash> dic;
 
 			// 挿入するチェインのインデックスをハッシュから確認する
-			EXPECT_EQ(Hash("A") % 2, Hash("C") % 2);
-			EXPECT_EQ(Hash("A") % 2, Hash("E") % 2);
+			EXPECT_EQ(dic.CalcHash("A"), dic.CalcHash("C"));
+			EXPECT_EQ(dic.CalcHash("A"), dic.CalcHash("E"));
 
 			// 挿入
 			EXPECT_TRUE(dic.Insert("A", 0));
-			EXPECT_TRUE(dic.Insert("C", 0));
+			EXPECT_TRUE(dic.Insert("C", 1));
+			// チェイン0
+			ChainCheck(dic.GetChain(0), { 0, 1 });
+			EXPECT_FALSE(HasFatalFailure());
+			// チェイン1
+			ChainCheck(dic.GetChain(1), { });
+			EXPECT_FALSE(HasFatalFailure());
+
+
 
 			// 削除
 			EXPECT_FALSE(dic.Remove("E"));
+			// チェイン0
+			ChainCheck(dic.GetChain(0), { 0, 1 });
+			EXPECT_FALSE(HasFatalFailure());
+			// チェイン1
+			ChainCheck(dic.GetChain(1), { });
+			EXPECT_FALSE(HasFatalFailure());
 		}
 
 		/// <summary>
@@ -439,18 +638,34 @@ namespace No01_06_Hash {
 			Dictionary<std::string, int, 2, Hash> dic;
 
 			// 挿入するチェインのインデックスをハッシュから確認する
-			EXPECT_EQ(Hash("A") % 2, Hash("C") % 2);
-			EXPECT_EQ(Hash("A") % 2, Hash("E") % 2);
+			EXPECT_EQ(dic.CalcHash("A"), dic.CalcHash("C"));
+			EXPECT_EQ(dic.CalcHash("A"), dic.CalcHash("E"));
 
 			// 挿入
 			EXPECT_TRUE(dic.Insert("A", 0));
-			EXPECT_TRUE(dic.Insert("C", 0));
-			EXPECT_TRUE(dic.Insert("E", 0));
+			EXPECT_TRUE(dic.Insert("C", 1));
+			EXPECT_TRUE(dic.Insert("E", 2));
+			// チェイン0
+			ChainCheck(dic.GetChain(0), { 0, 1, 2 });
+			EXPECT_FALSE(HasFatalFailure());
+			// チェイン1
+			ChainCheck(dic.GetChain(1), { });
+			EXPECT_FALSE(HasFatalFailure());
+
+
 
 			// 削除
 			EXPECT_TRUE(dic.Remove("A"));
 			EXPECT_TRUE(dic.Remove("C"));
 			EXPECT_TRUE(dic.Remove("E"));
+			// チェイン0
+			ChainCheck(dic.GetChain(0), { });
+			EXPECT_FALSE(HasFatalFailure());
+			// チェイン1
+			ChainCheck(dic.GetChain(1), { });
+			EXPECT_FALSE(HasFatalFailure());
+
+
 
 			// 要素数を確認
 			EXPECT_EQ(dic.GetCount(), 0);
@@ -585,8 +800,8 @@ namespace No01_06_Hash {
 			int tmp = -1;
 
 			// 挿入するチェインのインデックスをハッシュから確認する
-			EXPECT_EQ(Hash("A") % 2, Hash("C") % 2);
-			EXPECT_EQ(Hash("A") % 2, Hash("E") % 2);
+			EXPECT_EQ(dic.CalcHash("A"), dic.CalcHash("C"));
+			EXPECT_EQ(dic.CalcHash("A"), dic.CalcHash("E"));
 
 			// 挿入
 			EXPECT_TRUE(dic.Insert("A", 0));
@@ -614,8 +829,8 @@ namespace No01_06_Hash {
 			int tmp = -1;
 
 			// 挿入するチェインのインデックスをハッシュから確認する
-			EXPECT_EQ(Hash("A") % 2, Hash("C") % 2);
-			EXPECT_EQ(Hash("A") % 2, Hash("E") % 2);
+			EXPECT_EQ(dic.CalcHash("A"), dic.CalcHash("C"));
+			EXPECT_EQ(dic.CalcHash("A"), dic.CalcHash("E"));
 
 			// 挿入
 			EXPECT_TRUE(dic.Insert("A", 0));

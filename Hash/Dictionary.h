@@ -18,9 +18,9 @@
 /// <summary>
 /// リストクラス
 /// </summary>
-template<class K, class V, unsigned int BUCKET_SIZE, size_t (*HASH)(const K&)>
+template<class K, class V, unsigned int BUCKET_SIZE, size_t(*HASH)(const K &)>
 class Dictionary {
-private:
+public:
 	/*--- インナークラス ---*/
 
 	struct Pair {
@@ -71,7 +71,7 @@ public:
 	/// true:検索成功
 	/// false:検索失敗
 	/// </returns>
-	bool Find(const K &key, V& outValue) const;
+	bool Find(const K &key, V &outValue) const;
 
 	/// <summary>
 	/// 削除
@@ -84,10 +84,28 @@ public:
 	bool Remove(const K &key);
 
 	/// <summary>
+	/// ハッシュ値の計算
+	/// </summary>
+	/// <param name="key">キー</param>
+	/// <returns>ハッシュの値</returns>
+	unsigned int CalcHash(const K &key);
+
+
+
+public:
+	/*--- アクセサ関数 ---*/
+
+	/// <summary>
 	/// 要素数を取得
 	/// </summary>
 	/// <returns>要素数</returns>
-	unsigned int GetCount(void) const { return count; }
+	unsigned int GetCount(void) const;
+
+	/// <summary>
+	/// チェインを取得
+	/// </summary>
+	/// <returns>要素数</returns>
+	const List<Pair> &GetChain(unsigned int idx) const;
 };
 
 #include "Dictionary.inl"
